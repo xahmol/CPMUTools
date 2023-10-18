@@ -9,7 +9,9 @@ Disclaimer:  Because of the nature of DOS commands, use this code
 soley at your own risk.
 
 Patches and pull requests are welcome
-******************************************************************/
+******************************************************************
+
+Adapted for z88dk by Xander Mol, 2023 */
 
 #include <string.h>
 #include <stdlib.h>
@@ -17,6 +19,7 @@ Patches and pull requests are welcome
 
 #pragma code-name	("BANKACCESS");
 
+//Commented out as these need to be addressed as IO register via IN and OUT on Z80
 //unsigned char *id_reg = (unsigned char *)ID_REG;
 //unsigned char *cmddatareg = (unsigned char *)CMD_DATA_REG;
 //unsigned char *controlreg = (unsigned char *)CONTROL_REG;

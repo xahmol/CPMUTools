@@ -9,7 +9,9 @@ Disclaimer:  Because of the nature of DOS commands, use this code
 soley at your own risk.
 
 Patches and pull requests are welcome
-******************************************************************/
+******************************************************************
+
+Adapted for z88dk by Xander Mol, 2023 */
 
 #ifndef _ULTIMATE_COMMON_LIB_H_
 #define _ULTIMATE_COMMON_LIB_H_
@@ -93,6 +95,7 @@ Patches and pull requests are welcome
 
 #define uii_success() (uii_status[0] == '0' && uii_status[1] == '0')
 
+//Commented out as these need to be addressed as IO register via IN and OUT on Z80
 //extern unsigned char *id_reg;
 //extern unsigned char *cmddatareg;
 //extern unsigned char *controlreg;

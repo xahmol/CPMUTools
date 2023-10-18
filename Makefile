@@ -4,10 +4,10 @@ CTOOLS = /home/xahmol/ctools/bin/
 
 # Application name
 SUITE = cpmutools
-MOUNT = cpmumount
+MOUNT = umount
 
 # Sources for CPMUMount
-MOUNTSRC = cpmumount.c ultimate_common_lib.c ultimate_dos_lib.c ultimate_network_lib.c ultimate_time_lib.c
+MOUNTSRC = src/mount.c src/mount_common.c src/ultimate_common_lib.c src/ultimate_dos_lib.c src/ultimate_network_lib.c src/ultimate_time_lib.c
 
 # Hostname of Ultimate II+ target for deployment. Edit for proper IP and usb number
 ULTHOST = ftp://192.168.1.19/usb1/cpm/
