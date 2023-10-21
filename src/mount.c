@@ -1,9 +1,9 @@
 /*
-GeoUMount
-Disk mounter for the Ultimate II+ in GEOS
+CPMUMount
+Disk mounter for the Ultimate II+ in CPMS
 Written in 2023 by Xander Mol
 
-https://github.com/xahmol/GeoUTools
+https://github.com/xahmol/CPMUTools
 
 https://www.idreamtin8bits.com/
 
@@ -18,6 +18,13 @@ Code and resources from others used:
 
 -   Jochen Metzinger - ctools
     https://github.com/mist64/ctools
+
+-   ntp2ultimate by MaxPlap
+    https://github.com/MaxPlap/ntp2ultimate
+    Time via NTP code
+
+-   EPOCH-to-time-date-converter by sidsingh78
+    https://github.com/sidsingh78/EPOCH-to-time-date-converter/blob/master/epoch_conv.c
 
 -   Bart van Leeuwen for providing CP/M images, testing and advice
 
@@ -64,12 +71,13 @@ struct DirElement *presentdirelement;
 
 struct Directory {
     struct DirElement* firstelement;
-    struct DirElement* lastelement;
     struct DirElement* firstprint;
-    struct DirElement* lastprint;
     ushort position;
 };
 struct Directory presentdir;
+
+static const char progressBar[4] = { 0xA5, 0xA1, 0xA7, ' ' };
+static const char progressRev[4] = { 0,    0,    1,    1 };
 
 // Directory reading
 
@@ -96,7 +104,8 @@ void Readdir() {
     struct DirElement* previous = 0;
     struct DirElement* present = 0;
     unsigned char presenttype;
-    unsigned char datalength,maxlength;
+    unsigned char datalength,count;
+    unsigned char xpos = 0;
 
     // Free memory of previous dir if any
     if(presentdir.firstelement) { Freedir(); }
@@ -104,16 +113,18 @@ void Readdir() {
     // Clear directory values
     presentdir.firstelement = 0;
     presentdir.firstprint = 0;
-    presentdir.firstprint = 0;
-    presentdir.lastprint = 0;
     presentdir.position = 0;
 
     // Initialise reading dir
     uii_open_dir();
     if(!uii_success()) {
         uii_abort();
+        //ClearArea(0,24,80,1);
+        //printstrvdc(0,24,colorText,uii_status);
+        //cgetc();
         return;
     }
+    uii_get_dir();
 
     // Loop while dir data is available or memory is full
     while(uii_isdataavailable())
@@ -126,6 +137,22 @@ void Readdir() {
 		uii_accept();
 
         datalength = strlen(uii_data);
+
+        // print progress bar
+        if ((count>>2) >= 50) {
+            xpos = 0;
+            count=0;
+            ClearArea(0,24,50,1);
+        } else {
+            fillattrvdc(xpos + (count>>2),24,1,progressRev[count & 3]?colorText+vdcRvsVid:colorText);
+            filldspvdc(xpos + (count>>2),24,1,progressBar[count & 3]);
+            count++;
+        }
+
+        //ClearArea(0,23,80,2);
+        //printstrvdc(0,24,colorText,uii_status);
+        //printstrvdc(0,24,colorText,uii_data);
+        //cgetc();
 
         // Check if entry is a dir by checking if bit 4 of first byte is set
         if(uii_data[0]&0x10) { presenttype=1; }
@@ -159,10 +186,10 @@ void Readdir() {
 
         if(presenttype) {
             // Get file or dir name to buffer
-            maxlength = datalength-1; // Minus 1 for first attribute byte
-            if(maxlength>20) {maxlength=20; presenttype=6; }    // Truncate for max 20
+            datalength--; // Minus 1 for first attribute byte
+            if(datalength>20) { datalength=20; presenttype=6; }    // Truncate for max 20
             memset(buffer,0,21);
-            strlcpy(buffer,uii_data+1,maxlength);
+            strlcpy(buffer,uii_data+1,datalength+1);
 
             // Allocate memory for dir entry
             present = calloc(1, 26);
@@ -171,6 +198,9 @@ void Readdir() {
             if(!present) {
                 // Abort UCI dir reading
                 uii_abort();
+                //ClearArea(0,24,80,1);
+                //printstrvdc(0,24,colorError,"Memory full");
+                //cgetc();
                 return;
             }
 
@@ -180,7 +210,6 @@ void Readdir() {
             presentdirelement->type = presenttype;
 
             // Set direntry pointers
-            presentdir.lastelement = present;       // Update dir last element
             if(!previous) { presentdir.firstelement = present; presentdir.firstprint = present; previous=present; }
             else {
                 presentdirelement->prev = previous;     // Set prev in new entry
@@ -188,8 +217,16 @@ void Readdir() {
                 presentdirelement->next = present;      // Set next in this prev element
                 previous=present;                       // Update previous pointer
             }
+
+            //ClearArea(0,24,80,1);
+            //sprintf(buffer,"%-20s %d %3d %3d",uii_data+1,presenttype,datalength,strlen(uii_data));
+            //printstrvdc(0,24,colorText,buffer);
+            //cgetc();
         }
 	}
+    present = presentdir.firstelement;
+    presentdirelement = presentdir.firstelement;
+    ClearArea(0,24,50,1);
 }
 
 // Screen printing
@@ -200,7 +237,7 @@ void DrawIDandPath() {
     ushort length;
 
     // Clear area
-    ClearArea(0,3,80,2);
+    ClearArea(0,3,50,2);
 
     // Get ID from UCI and print
     uii_identify();
@@ -253,12 +290,83 @@ void DrawTargetdrive() {
     printstrvdc(51,9,colorText,buffer);
 }
 
+void PrintDirEntry(struct DirElement *present, unsigned char printpos) {
+// Print entry
+
+    unsigned char xpos = (printpos>17)?25:0;
+    unsigned char ypos = (printpos>17)?printpos-13:5+printpos;
+    unsigned char color = (printpos == presentdir.position)?colorSelect:colorDirEntry;
+
+    sprintf(buffer,"%-20s %-3s",present->filename,entrytypes[present->type-1]);
+    printstrvdc(xpos,ypos,color,buffer);
+}
+
+void DrawDir(unsigned char readdir) {
+// Draw the dirlisting. Read dir is flag for 0 = just reprint same dir, 1 = read new dir
+
+    unsigned char printpos = 0;
+    struct DirElement *present;
+
+    // Clear area
+    ClearArea(0,5,50,18);
+
+    // Read directory contents
+    if(readdir) {
+        DrawIDandPath();
+        Readdir();
+    }
+
+    // Print no data if no valid entries in dir are found
+    if(!presentdir.firstprint) {
+        printstrvdc(1,5,colorError,"No data.");
+    }
+    // Print entries until area is filled or last item is reached
+    else
+    {
+        // Get direlement
+        present = presentdir.firstprint;
+
+        // Loop while area is not full and further direntries are still present
+        do
+        {
+            // Print entry and increase printpos
+            PrintDirEntry(present, printpos++);
+
+            // Check if next dir entry is present, if no: break. If yes: update present pointer
+            if(!present->next) { break; }
+            else { present = present->next; }
+
+        } while (printpos<36);
+    }
+
+    present = presentdir.firstelement;
+}
+
+void DrawMenu() {
+    unsigned char ypos = 11;
+    
+    printstrvdc(51,ypos++,colorText,"A-D   : Select target");
+    printstrvdc(51,ypos++,colorText,"Curs  : Navigation");
+    printstrvdc(51,ypos++,colorText,"RETURN: Select");
+    printstrvdc(51,ypos++,colorText,"P     : Page Down");
+    printstrvdc(51,ypos++,colorText,"U     : Page Up");
+    printstrvdc(51,ypos++,colorText,"DEL   : Parent dir");
+    printstrvdc(51,ypos++,colorText,"R     : Root dir");
+    printstrvdc(51,ypos++,colorText,"H     : Home dir");
+    printstrvdc(51,ypos++,colorText,"I     : Version");
+    printstrvdc(51,ypos++,colorText,"ESC   : Quit");
+}
+
 // Main
 
 void main (void) {
+
+    unsigned char key,element;
+    struct DirElement *present;
+
     // Set version number in string variable
     sprintf(version,
-            "v%2i.%2i - %c%c%c%c%c%c%c%c-%c%c%c%c",
+            "v%2d.%2d - %c%c%c%c%c%c%c%c-%c%c%c%c",
             VERSION_MAJOR, VERSION_MINOR,
             BUILD_YEAR_CH0, BUILD_YEAR_CH1, BUILD_YEAR_CH2, BUILD_YEAR_CH3,
             BUILD_MONTH_CH0, BUILD_MONTH_CH1, BUILD_DAY_CH0, BUILD_DAY_CH1,
@@ -280,11 +388,218 @@ void main (void) {
     // Initialize screen
     init();
     headertext("(C) 2023 Xander Mol");
-    DrawIDandPath();
     DrawDrivetypes();
     DrawTargetdrive();
+    DrawMenu();
+    DrawDir(1);
+
+    // Main loop
+    presentdirelement = presentdir.firstelement;
+    do
+    {
+        present = presentdirelement;
+
+        //sprintf(buffer,"Pos    : %02d",presentdir.position);
+        //printstrvdc(51,20,colorText,buffer);
+        //sprintf(buffer,"Present: %4X",present);
+        //printstrvdc(51,21,colorText,buffer);
+        //sprintf(buffer,"PrDirEl: %4X",presentdirelement);
+        //printstrvdc(51,22,colorText,buffer);
+        //sprintf(buffer,"FirstEl: %4X",presentdir.firstelement);
+        //printstrvdc(51,23,colorText,buffer);
+        //sprintf(buffer,"FirstPr: %4X",presentdir.firstprint);
+        //printstrvdc(51,24,colorText,buffer);
+
+        key = cgetc();
+
+        //sprintf(buffer,"Key    : %02X",key);
+        //printstrvdc(51,19,colorText,buffer);
+
+
+        switch (key)
+        {
+        case CURS_DOWN:
+        case CURU_DOWN:
+        // Go down
+            if(presentdirelement && presentdirelement->next) {
+                present = presentdirelement->next;
+                presentdirelement = present;
+                presentdir.position++;
+                if(presentdir.position > 35) {
+                    // Next page
+                    presentdir.firstprint = present;
+                    presentdir.position = 0;
+                    DrawDir(0);
+                    presentdirelement = present;
+                } else {
+                    // Next line same page
+                    presentdirelement = present->prev;
+                    PrintDirEntry(presentdirelement,presentdir.position-1);
+                    presentdirelement = present;
+                    PrintDirEntry(presentdirelement,presentdir.position);
+                }
+            }
+            break;
+
+        case CURS_UP:
+        case CURU_UP:
+        // Go up
+            if(presentdirelement && presentdirelement->prev) {
+                present = presentdirelement->prev;
+                presentdirelement = present;
+                if(presentdir.position == 0) {
+                    // Previous page
+                    // Go back 35 positions
+                    for(element=0;element<35;element++) {
+                        if(present->prev) {
+                            present = present->prev;
+                            presentdir.position++;
+                        }
+                    }
+                    presentdir.firstprint = present;
+                    DrawDir(0);
+                } else {
+                    // Previous line same page
+                    presentdir.position--;
+                    presentdirelement = present->next;
+                    PrintDirEntry(presentdirelement,presentdir.position+1);
+                    presentdirelement = present;
+                    PrintDirEntry(presentdirelement,presentdir.position);
+                }
+            }
+            break;
+
+        case CURS_RIGHT:
+        case CURU_RIGHT:
+        // Go right
+            if(presentdir.position<18) {
+                // Check if not already right
+                presentdir.position++;
+                PrintDirEntry(present,presentdir.position-1);
+                presentdir.position--;
+                // Scroll 18 positions forward or to last element
+                for(element=0;element<18;element++) {
+                    if(present->next) {
+                        present = present->next;
+                        presentdir.position++;
+                    }
+                }
+                PrintDirEntry(present,presentdir.position);
+                presentdirelement = present;
+            }
+            break;
+
+        case CURS_LEFT:
+        case CURU_LEFT:
+        // Go left
+            if(presentdir.position>17) {
+                // Check if not allready left
+                presentdir.position++;
+                PrintDirEntry(present,presentdir.position-1);
+                presentdir.position--;
+                // Scroll 18 positions back or to first element
+                for(element=0;element<18;element++) {
+                    if(present->prev) {
+                        present = present->prev;
+                        presentdir.position--;
+                    }
+                }
+                PrintDirEntry(present,presentdir.position);
+                presentdirelement = present;
+            }
+            break;
+
+        case K_RETURN:
+        case K_CR:
+        // RETURN for select dir or image
+            if(presentdirelement->type !=6 )
+            // Check if a valid type
+            {
+                if(presentdirelement->type == 1) {
+                    // Change directory
+                    uii_change_dir(presentdirelement->filename);
+                    CheckStatus();
+                    DrawDir(1);
+                }
+            }
+            break;
+
+        case K_BACKKSPACE:
+        case K_DEL:
+        // Go to parent dir
+            uii_change_dir("..");
+            CheckStatus();
+            DrawDir(1);
+            break;
+
+        case 'p':
+            if(presentdirelement->next) {
+                // Check if not allready last item
+                presentdir.position=0;
+                // Go forward 36 positions
+                for(element=0;element<36;element++) {
+                    if(present->next) {
+                        present = present->next;
+                    }
+                }
+                presentdir.firstprint = present;
+                DrawDir(0);
+                presentdirelement = present;
+            }
+            break;
+
+        case 'u':
+            if(presentdirelement->prev) {
+                // Check if not allready first item
+                presentdir.position=0;
+                // Go back 36 positions
+                for(element=0;element<36;element++) {
+                    if(present->prev) {
+                        present = present->prev;
+                    }
+                }
+                presentdir.firstprint = present;
+                DrawDir(0);
+                presentdirelement = present;
+            }
+            break;
+
+        case 'r':
+        // Go to root dir
+            uii_change_dir("/");
+            CheckStatus();
+            DrawDir(1);
+            break;
+
+        case 'h':
+        // Go to home dir
+            uii_change_dir_home();
+            CheckStatus();
+            DrawDir(1);
+            break;
+
+        case 'a':
+        case 'b':
+        case 'c':
+        case 'd':
+            if(validdrive[key-'a']) {
+                targetdrive = key - 'a' + 1;
+                DrawTargetdrive();
+            }
+            break;
+
+        case 'i':
+            sprintf(buffer,"Version: %s. Press key.",version);
+            printstrvdc(0,24,colorText,buffer);
+            cgetc();
+            ClearArea(0,24,80,1);
+            break;
+
+        default:
+            break;
+        }
+    } while (key != K_ESCAPE);
 
     // Exit program
-    cgetc();
     done(0);
 }

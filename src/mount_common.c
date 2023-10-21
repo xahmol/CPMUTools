@@ -19,6 +19,13 @@ Code and resources from others used:
 -   Jochen Metzinger - ctools
     https://github.com/mist64/ctools
 
+-   ntp2ultimate by MaxPlap
+    https://github.com/MaxPlap/ntp2ultimate
+    Time via NTP code
+
+-   EPOCH-to-time-date-converter by sidsingh78
+    https://github.com/sidsingh78/EPOCH-to-time-date-converter/blob/master/epoch_conv.c
+
 -   Bart van Leeuwen for providing CP/M images, testing and advice
 
 -   Gideon Zweijtzer for creating the Ultimate II+ cartridge and the Ultimate64, and the Ultimate Command Interface enabling this software.
@@ -61,8 +68,7 @@ char entrytypes[7][4] = {
     "D71",
     "D81",
     "DNP",
-    "!TL",
-    "!IS"
+    "!TL"
 };
 unsigned char targetdrive;
 struct mconfig mountconfig;

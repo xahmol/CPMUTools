@@ -20,6 +20,27 @@ extern char version[25];
 #define colorHeader1        vdcDarkGreen + vdcRvsVid + vdcAltChrSet
 #define colorHeader2        vdcLightGreen + vdcRvsVid + vdcAltChrSet
 
+// Define cursor key codes
+
+// Cursor keys right under
+#define CURS_LEFT           0x01
+#define CURS_RIGHT          0x06
+#define CURS_UP             0x1A
+#define CURS_DOWN           0x17
+
+// Cursor keys upper
+#define CURU_RIGHT          0x04
+#define CURU_UP             0x05
+#define CURU_LEFT           0x13
+#define CURU_DOWN           0x18
+
+// Other keys
+#define K_BACKKSPACE        0x08
+#define K_RETURN            0x0A
+#define K_CR                0x0D
+#define K_ESCAPE            0x1B
+#define K_DEL               0x7F
+
 /* Defines for versioning */
 /* Version number */
 #define VERSION_MAJOR 0
