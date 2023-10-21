@@ -71,8 +71,6 @@ char entrytypes[7][4] = {
     "!TL"
 };
 unsigned char targetdrive;
-struct mconfig mountconfig;
-unsigned char firmwareflag;
 
 // Common routines for CPMUMount and CPMUConfig
 void init() {
@@ -90,6 +88,14 @@ void done(unsigned char exitcode) {
     restorevdc();                       // Restore VDC registers
     setcursorvdc(7,7,vdcCurRate32);     // Restore cursor
     exit(exitcode);                     // Exit to CP/M
+}
+
+void delay(ushort D) {
+/* delay in tens of seconds (1/10sec) */
+  setintctrlcia(cia2,ciaClearIcr); /* disable all cia 2 interrupts */
+  settimerbcia(cia2,D,ciaCountA);  /* timer b counts timer a underflows */
+  settimeracia(cia2,timervalcia(10),ciaCPUCont); /* set timer a 1/1000 sec */
+  while ((inp(cia2+ciaIntCtrl) & 0x02) == 0);      /* wait for count down */
 }
 
 void ClearArea(ushort x, ushort y, ushort width, ushort height) {
@@ -134,28 +140,15 @@ unsigned char CheckStatus() {
     return 0;
 }
 
-//void ReadConfigdata() {
-//// Read configuration data from the application file header
-//// Application data area is at byte 40 to 63 from the author section of the fileheader Struct
-//
-//    mountconfig.auto_override   = fileHeader.author[40];
-//    mountconfig.valid[0]        = fileHeader.author[41];
-//    mountconfig.valid[1]        = fileHeader.author[42];
-//    mountconfig.valid[2]        = fileHeader.author[43];
-//    mountconfig.valid[3]        = fileHeader.author[44];
-//    mountconfig.target          = fileHeader.author[45];
-//}
-
 void SetValidDrives() {
 // Initialise variables to defines which drive IDs are valid targets
 
     unsigned char drive;
 
     targetdrive = 0;
-    firmwareflag = 0;
 
     if(!uii_detect()) {
-        printf("No Ultimate Command Interface.");
+        printf("No Ultimate Command Interface.\n\r");
         exit(1);
     }
 
@@ -170,35 +163,23 @@ void SetValidDrives() {
 
     // Get device info from UCI
     if(!uii_parse_deviceinfo()) {
-        mountconfig.auto_override = 1;
-        firmwareflag = 2;
+        printf("Update UII+ firmware.\n\r");
+        exit(1);
     }
 
-    if(mountconfig.auto_override) {
-    // Set valid drives with the override settings in the config data
-        
-        for(drive=0;drive<4;drive++) {
-            validdrive[drive] = mountconfig.valid[drive];
-        }
-
-    } else {
     // Set valid drives with auto detection
 
-        for(drive=0;drive<4;drive++)
-        {
-            validdrive[drive]=0;
+    for(drive=0;drive<4;drive++)
+    {
+        validdrive[drive]=0;
 
-            // Check if drive ID is a Ultimate emulated drive
-            if(uii_devinfo[0].id == drive+8) {
-                validdrive[drive] = 1;
-            }
-            if(uii_devinfo[1].id == drive+8) {
-                validdrive[drive] = 2;
-            }
-            if(validdrive[drive] && !targetdrive) { targetdrive = drive+1; }
+        // Check if drive ID is a Ultimate emulated drive
+        if(uii_devinfo[0].id == drive+8) {
+            validdrive[drive] = 1;
         }
+        if(uii_devinfo[1].id == drive+8) {
+            validdrive[drive] = 2;
+        }
+        if(validdrive[drive] && !targetdrive) { targetdrive = drive+1; }
     }
-
-    // Set target drive to override if set and valid
-    if(mountconfig.target && validdrive[mountconfig.target-1]) { targetdrive = mountconfig.target; }
 }

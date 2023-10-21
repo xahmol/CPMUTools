@@ -269,7 +269,7 @@ void DrawDrivetypes() {
         if(!validdrive[drive]) {
             sprintf(buffer+3,"No target");
         } else {
-            sprintf(buffer+3,"%02d, %s",drive+8,uii_device_tyoe(uii_devinfo[validdrive[drive]-1].type));
+            sprintf(buffer+3,"%02d, %s %s",drive+8,uii_device_tyoe(uii_devinfo[validdrive[drive]-1].type),(uii_device_tyoe(uii_devinfo[validdrive[drive]-1].power))?"On ":"Off");
         }
         printstrvdc(51,4+drive,colorText,buffer);
     }    
@@ -278,7 +278,7 @@ void DrawDrivetypes() {
 void DrawTargetdrive() {
 // Draw presently selected target.
 
-    ClearArea(51,9,30,1);
+    ClearArea(51,9,29,1);
     if(targetdrive)
     {
         sprintf(buffer,"Target is drive %c",targetdrive-1+'A');
@@ -348,13 +348,57 @@ void DrawMenu() {
     printstrvdc(51,ypos++,colorText,"A-D   : Select target");
     printstrvdc(51,ypos++,colorText,"Curs  : Navigation");
     printstrvdc(51,ypos++,colorText,"RETURN: Select");
-    printstrvdc(51,ypos++,colorText,"P     : Page Down");
-    printstrvdc(51,ypos++,colorText,"U     : Page Up");
+    printstrvdc(51,ypos++,colorText,"P / U : Page Down/Up");
+    printstrvdc(51,ypos++,colorText,"T / E : Go to Top/End");
     printstrvdc(51,ypos++,colorText,"DEL   : Parent dir");
     printstrvdc(51,ypos++,colorText,"R     : Root dir");
     printstrvdc(51,ypos++,colorText,"H     : Home dir");
     printstrvdc(51,ypos++,colorText,"I     : Version");
     printstrvdc(51,ypos++,colorText,"ESC   : Quit");
+}
+
+// Mounting routines
+
+void EnableDrivePower(unsigned char ab) {
+// Toggle power for the Ultimate drives
+// - ab: Drive A = 0, Drive B = 1
+
+    if(uii_devinfo[ab].exist) {
+    // Drive selected and existing
+
+        if(!uii_devinfo[ab].power) {
+        // Power on drive A if needed
+            if(!ab) { 
+                uii_enable_drive_a();
+            } else {
+                uii_enable_drive_b();
+            }
+            delay(20);
+        }
+        CheckStatus();
+    }
+}
+
+void MountImage(ushort target,char* image) {
+
+    ushort ult_drive;
+
+    SetValidDrives();                                           // Recheck drive statusses
+    EnableDrivePower((uii_devinfo[0].id == target+7)?0:1);      // Enable drive A if powered off
+    uii_mount_disk(target+7,image);                             // Mount image
+
+    // Print error message or success message
+    if(!CheckStatus()) {
+        SetValidDrives();                                       // Recheck drive statusses
+        ClearArea(51,3,29,5);
+        DrawDrivetypes();                                       // Redraw drive statusses
+        printstrvdc(0,23,colorSucces,"Succes!");
+        sprintf(buffer,"%s mounted on %c, ID %2d",image,target+'A'-1,target+7);
+        printstrvdc(8,23,colorText,buffer);
+        printstrvdc(0,24,colorText,"Press ESC to exit or any other key to mount another image.");
+        if(cgetc() == K_ESCAPE) { done(0); }                    // Exit program if ESCAPE is pressed
+        ClearArea(0,23,80,2);
+    }
 }
 
 // Main
@@ -520,6 +564,9 @@ void main (void) {
                     uii_change_dir(presentdirelement->filename);
                     CheckStatus();
                     DrawDir(1);
+                } else {
+                    // Mount image
+                    MountImage(targetdrive,presentdirelement->filename);
                 }
             }
             break;
@@ -576,6 +623,39 @@ void main (void) {
             uii_change_dir_home();
             CheckStatus();
             DrawDir(1);
+            break;
+
+        case 't':
+        // Go to first entry
+            if(presentdir.firstelement && presentdirelement->prev) {
+                // Check if a dir is loaded and if not already first item
+                presentdirelement = presentdir.firstelement;
+                presentdir.firstprint = presentdir.firstelement;
+                presentdir.position = 0;
+                DrawDir(0);
+            }
+            break;
+
+        case 'e':
+        // Go to last entry
+            if(presentdir.firstelement && presentdirelement->next) {
+                // Check if a dir is loaded and if not already last item
+
+                // Go to last item and update position and first printed
+                element = presentdir.position;
+                do
+                {
+                    present = present->next;
+                    element++;
+                    if(element>35) {
+                        element = 0;
+                        presentdir.firstprint = present;
+                    }
+                } while (present->next);
+                presentdir.position = element;
+                presentdirelement = present;
+                DrawDir(0);
+            }
             break;
 
         case 'a':
