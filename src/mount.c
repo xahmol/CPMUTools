@@ -512,7 +512,7 @@ void main (void) {
         case K_RETURN:
         case K_CR:
         // RETURN for select dir or image
-            if(presentdirelement->type !=6 )
+            if(presentdir.firstelement && presentdirelement->type !=6 )
             // Check if a valid type
             {
                 if(presentdirelement->type == 1) {
