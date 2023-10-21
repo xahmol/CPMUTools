@@ -383,13 +383,13 @@ void MountImage(ushort target,char* image) {
 
     ushort ult_drive;
 
-    SetValidDrives();                                           // Recheck drive statusses
+    uii_parse_deviceinfo();                                     // Recheck drive statusses
     EnableDrivePower((uii_devinfo[0].id == target+7)?0:1);      // Enable drive A if powered off
     uii_mount_disk(target+7,image);                             // Mount image
 
     // Print error message or success message
     if(!CheckStatus()) {
-        SetValidDrives();                                       // Recheck drive statusses
+        uii_parse_deviceinfo();                                 // Recheck drive statusses
         ClearArea(51,3,29,5);
         DrawDrivetypes();                                       // Redraw drive statusses
         printstrvdc(0,23,colorSucces,"Succes!");
