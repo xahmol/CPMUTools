@@ -29,6 +29,7 @@ void uii_write_file(unsigned char* data, int length);
 void uii_read_file(unsigned char length);
 void uii_delete_file(char* filename);
 void uii_load_reu(unsigned char size);
+void uii_save_reu(unsigned char size);
 void uii_get_deviceinfo(void);
 unsigned char uii_parse_deviceinfo(void);
 char* uii_device_tyoe(unsigned char typeval);

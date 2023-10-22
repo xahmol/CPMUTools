@@ -58,7 +58,6 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "include/ultimate_network_lib.h"
 
 // Global variables
-unsigned char reusavesize;
 
 // Directory entry struct
 struct DirElement {
@@ -76,8 +75,15 @@ struct Directory {
 };
 struct Directory presentdir;
 
+// Progress bar
 static const char progressBar[4] = { 0xA5, 0xA1, 0xA7, ' ' };
 static const char progressRev[4] = { 0,    0,    1,    1 };
+
+// REU size variables
+char reuname[21] = "cpm";                                                     // Set cpm.reu as default
+unsigned char reusize = 7;                                                      // Set 16 MB as default
+char* reusizelist[8] = { "128 KB","256 KB","512 KB","1 MB","2 MB","4 MB","8 MB","16 MB"};
+unsigned char reusizes[8] = { 1,3,7,15,31,63,127,255 };
 
 // Directory reading
 
@@ -353,6 +359,7 @@ void DrawMenu() {
     printstrvdc(51,ypos++,colorText,"DEL   : Parent dir");
     printstrvdc(51,ypos++,colorText,"R     : Root dir");
     printstrvdc(51,ypos++,colorText,"H     : Home dir");
+    printstrvdc(51,ypos++,colorText,"S     : Save REU");
     printstrvdc(51,ypos++,colorText,"I     : Version");
     printstrvdc(51,ypos++,colorText,"ESC   : Quit");
 }
@@ -398,6 +405,86 @@ void MountImage(ushort target,char* image) {
         printstrvdc(0,24,colorText,"Press ESC to exit or any other key to mount another image.");
         if(cgetc() == K_ESCAPE) { done(0); }                    // Exit program if ESCAPE is pressed
         ClearArea(0,23,80,2);
+    }
+}
+
+void saveREU() {
+// Function to save present REU expanded memory to REU file
+
+    unsigned char namelen,key;
+    char savename[21];
+
+    // Ask for filename
+    printstrvdc(0,23,colorText,"Enter filename for the image:");
+    if( textInput(0,24,reuname,16) == -1) { ClearArea(0,23,80,2); return ; }
+    ClearArea(0,23,80,2);
+
+    // Add extention based on RAM disk type
+    strcpy(savename,reuname);
+    namelen = strlen(savename);
+    savename[namelen] = '.';
+    strcpy(savename+1+namelen,"reu");
+
+    // Check if file exists
+    uii_open_file(1,savename);
+    if(uii_success()) {
+        uii_close_file();
+        printstrvdc(0,24,colorText,"File exists. Overwrite? Y=Yes or N=No");
+        do
+        {
+            key = cgetc();
+        } while (key!='y' && key!='n');
+        ClearArea(0,24,80,1);
+
+        if( key == 'n') {
+            // Exit function on NO on overwrite
+            return;
+        } else {
+            // Delete existing file if YES on overwrite
+            uii_delete_file(savename);
+            if(!CheckStatus) { return; }
+        }
+    } else {
+        uii_abort();
+    }
+
+    // Select REU size
+    printstrvdc(0,23,colorText,"Select REU size (+/-/ENTER):");
+    do
+    {
+        sprintf(buffer,"REU file size: (%d) %s  ",reusize,reusizelist[reusize]);
+        printstrvdc(0,24,colorText,buffer);
+        key = cgetc();
+        if(key == '+') {
+            reusize++;
+            if(reusize > 7) { reusize = 0; }
+        }
+        if(key == '-') {
+            if(reusize == 0) { reusize = 7; }
+            else { reusize--; }       
+        }
+    } while (key!=K_RETURN);
+    ClearArea(0,23,80,2);
+
+    // Print saving message
+    sprintf(buffer,"Saving: %d KB to %s. Please wait.",(reusizes[reusize]+1)*64,savename);
+    printstrvdc(0,24,colorText,buffer);
+
+    // Save REU image
+    uii_open_file(0x06,savename);
+    if(!CheckStatus) { return; }
+    uii_save_reu(reusize);
+    if(!CheckStatus) { return; }
+    uii_close_file();
+    ClearArea(0,24,80,1);
+
+    // Print result
+    if( !CheckStatus() ) {
+        printstrvdc(0,24,colorSucces,"Succes! ");
+        sprintf(buffer,"Saved %d KB to %s. Press key.",(reusizes[reusize]+1)*64,savename);
+        printstrvdc(8,24,colorText,buffer);
+        cgetc();
+        ClearArea(0,24,80,1);
     }
 }
 
@@ -666,6 +753,10 @@ void main (void) {
                 targetdrive = key - 'a' + 1;
                 DrawTargetdrive();
             }
+            break;
+        
+        case 's':
+            saveREU();
             break;
 
         case 'i':
