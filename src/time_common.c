@@ -56,10 +56,3 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "include/ultimate_common_lib.h"
 #include "include/ultimate_dos_lib.h"
 #include "include/ultimate_time_lib.h"
-
-long secondsfromutc = 3600; 
-char host[81] = "pool.ntp.org";
-unsigned char verbose = 0;
-unsigned char ntpon = 1;
-char configbuffer[95];
-char filename[13] = "GeoUTimeDat";

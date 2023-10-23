@@ -68,10 +68,11 @@ char entrytypes[7][4] = {
     "!TL"
 };
 unsigned char targetdrive;
+unsigned char firmwareflag;
 
 // UCI routines
 
-unsigned char CheckStatus() {
+unsigned char CheckUCIStatus() {
 // Function to check UII+ status and print error box if applicable
 
     if (!uii_success()) {
@@ -92,6 +93,7 @@ void SetValidDrives() {
     unsigned char drive;
 
     targetdrive = 0;
+    firmwareflag = 0;
 
     if(!uii_detect()) {
         printf("No Ultimate Command Interface.\n\r");
@@ -109,23 +111,34 @@ void SetValidDrives() {
 
     // Get device info from UCI
     if(!uii_parse_deviceinfo()) {
-        printf("Update UII+ firmware.\n\r");
-        exit(1);
+        mountconfig.auto_override = 1;
+        firmwareflag = 2;
     }
 
+    if(mountconfig.auto_override) {
+    // Set valid drives with the override settings in the config data
+        
+        for(drive=0;drive<4;drive++) {
+            validdrive[drive] = mountconfig.valid[drive];
+        }
+    } else {
     // Set valid drives with auto detection
 
-    for(drive=0;drive<4;drive++)
-    {
-        validdrive[drive]=0;
+      for(drive=0;drive<4;drive++)
+      {
+          validdrive[drive]=0;
 
-        // Check if drive ID is a Ultimate emulated drive
-        if(uii_devinfo[0].id == drive+8) {
-            validdrive[drive] = 1;
-        }
-        if(uii_devinfo[1].id == drive+8) {
-            validdrive[drive] = 2;
-        }
-        if(validdrive[drive] && !targetdrive) { targetdrive = drive+1; }
+          // Check if drive ID is a Ultimate emulated drive
+          if(uii_devinfo[0].id == drive+8) {
+              validdrive[drive] = 1;
+          }
+          if(uii_devinfo[1].id == drive+8) {
+              validdrive[drive] = 2;
+          }
+          if(validdrive[drive] && !targetdrive) { targetdrive = drive+1; }
+      }
     }
+
+    // Set target drive to override if set and valid
+    if(mountconfig.target && validdrive[mountconfig.target-1]) { targetdrive = mountconfig.target; }
 }

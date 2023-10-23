@@ -382,7 +382,7 @@ void EnableDrivePower(unsigned char ab) {
             }
             delay(20);
         }
-        CheckStatus();
+        CheckUCIStatus();
     }
 }
 
@@ -395,7 +395,7 @@ void MountImage(ushort target,char* image) {
     uii_mount_disk(target+7,image);                             // Mount image
 
     // Print error message or success message
-    if(!CheckStatus()) {
+    if(!CheckUCIStatus()) {
         uii_parse_deviceinfo();                                 // Recheck drive statusses
         ClearArea(51,3,29,5);
         DrawDrivetypes();                                       // Redraw drive statusses
@@ -442,7 +442,7 @@ void saveREU() {
         } else {
             // Delete existing file if YES on overwrite
             uii_delete_file(savename);
-            if(!CheckStatus) { return; }
+            if(!CheckUCIStatus()) { return; }
         }
     } else {
         uii_abort();
@@ -472,14 +472,14 @@ void saveREU() {
 
     // Save REU image
     uii_open_file(0x06,savename);
-    if(!CheckStatus) { return; }
+    if(!CheckUCIStatus()) { return; }
     uii_save_reu(reusize);
-    if(!CheckStatus) { return; }
+    if(!CheckUCIStatus()) { return; }
     uii_close_file();
     ClearArea(0,24,80,1);
 
     // Print result
-    if( !CheckStatus() ) {
+    if( !CheckUCIStatus() ) {
         printstrvdc(0,24,colorSucces,"Succes! ");
         sprintf(buffer,"Saved %d KB to %s. Press key.",(reusizes[reusize]+1)*64,savename);
         printstrvdc(8,24,colorText,buffer);
@@ -506,8 +506,9 @@ void main (void) {
     // Set presentdir pointer at zero
     presentdir.firstelement = 0;
 
-    // Get config data from application header
-    //ReadConfigdata();
+    // Get config data
+    memset(&mountconfig,0,sizeof(mountconfig));
+    ReadConfigfile(0);
 
     // Get valid UII+ drives
     SetValidDrives();
@@ -649,7 +650,7 @@ void main (void) {
                 if(presentdirelement->type == 1) {
                     // Change directory
                     uii_change_dir(presentdirelement->filename);
-                    CheckStatus();
+                    CheckUCIStatus();
                     DrawDir(1);
                 } else {
                     // Mount image
@@ -662,7 +663,7 @@ void main (void) {
         case K_DEL:
         // Go to parent dir
             uii_change_dir("..");
-            CheckStatus();
+            CheckUCIStatus();
             DrawDir(1);
             break;
 
@@ -701,14 +702,14 @@ void main (void) {
         case 'r':
         // Go to root dir
             uii_change_dir("/");
-            CheckStatus();
+            CheckUCIStatus();
             DrawDir(1);
             break;
 
         case 'h':
         // Go to home dir
             uii_change_dir_home();
-            CheckStatus();
+            CheckUCIStatus();
             DrawDir(1);
             break;
 

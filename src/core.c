@@ -60,6 +60,13 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 char buffer[81];
 char version[25];
 ushort vdcDispMem;
+char configbuffer[101];
+char filename[13] = "cpmutool.cfg";
+struct mconfig mountconfig;
+long secondsfromutc = 3600; 
+char host[81] = "pool.ntp.org";
+unsigned char verbose = 0;
+unsigned char ntpon = 1;
 
 // Common routines for CPMUMount and CPMUConfig
 
@@ -225,4 +232,108 @@ void headertext(char* subtitle)
     if(uii_success()) {
         printstrvdc(80-strlen(uii_data),1,colorHeader2,uii_data);
     }
+}
+
+// Config file routimes
+
+void ErrorMessage(char* stage, unsigned char vdcmode) {
+// Config file handling error handling message
+
+    sprintf(buffer,"Error in %s of config file. Press key.",stage);
+
+    if(vdcmode) {
+    // Error message in VDC mode
+        printstrvdc(0,24,colorError,"Error! ");
+        printstrvdc(7,24,colorText,buffer);
+        cgetc();
+        done(1);
+    } else {
+        printf("%s",buffer);
+        exit(1);
+    }
+}
+
+void WriteConfigfile(unsigned char vdcmode) {
+// Write config file
+
+    FILE* file;
+
+    if(!vdcmode) { printf("Open config flle for writing.\n\r"); } else {
+        printstrvdc(0,24,colorText,"Writing configuration file. Please wait.");
+    }
+
+    // Clear configbuffer
+    memset(configbuffer,0,101);
+
+    // Copy host to savebuffer
+    strcpy(configbuffer, host);
+
+    // Copy UTC offset to savebuffer
+    sprintf(configbuffer+80,"%ld",secondsfromutc);
+
+    // Copy verbose flag to savebuffer
+    configbuffer[92] = verbose+48;
+
+    // Copy NTP on flag to savebuffer
+    configbuffer[93] = ntpon+48;
+
+    // Copy config file version
+    configbuffer[94] = configfileversion + 48;
+
+    // Copy mount config
+    memcpy(&configbuffer+95,&mountconfig,sizeof(mountconfig));
+
+    // Open file for write
+    file = fopen(filename,"w");
+    if(!file) { ErrorMessage("opeming for write",1); }
+
+    // Write to file
+    if(!vdcmode) { printf("Write to file.\n\r"); }
+    if(!fwrite(&configbuffer,101,1,file)) { fclose(file); ErrorMessage("writing",1); }
+
+    // Close file
+    if(!vdcmode) { printf("Close file.\n\r"); } else { ClearArea(0,24,80,1); }
+    fclose(file);
+}
+
+void ReadConfigfile(unsigned char vdcmode) {
+// Read config file
+
+    FILE* file;
+    char* ptrend;
+
+    if(!vdcmode) { printf("Open config file for reading.\n\r"); } else {
+        printstrvdc(0,24,colorText,"Reading configuration file. Please wait.");
+    }
+
+    // Open file for read
+    file = fopen(filename,"r");
+
+    // Check if file exists, write one instead
+    if(!file) { ClearArea(0,24,80,1); WriteConfigfile(vdcmode); return; }
+
+    // Reading file
+    if(!vdcmode) { printf("Reading from file.\n\r"); }
+    if(!fread(&configbuffer,101,1,file)) { fclose(file); ErrorMessage("reading",1); }
+
+    // Close file
+    if(!vdcmode) { printf("Close file.\n\r"); } else { ClearArea(0,24,80,1); }
+    fclose(file);
+
+    // Reading verbose flag
+    verbose = configbuffer[92]-48;
+
+    // Reading ntp on flag
+    ntpon = configbuffer[93]-48;
+
+    // Reading hostname
+    strlcpy(host, configbuffer,80);
+
+    // Reading UTC offset
+    strlcpy(buffer,configbuffer+80,12);
+    buffer[13]=0;
+    secondsfromutc = strtol(buffer,&ptrend,10);
+
+    // Reading mount config
+    memcpy(&mountconfig,configbuffer+95,sizeof(mountconfig));
 }
