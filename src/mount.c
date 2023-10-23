@@ -51,11 +51,11 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include <c128/vdc.h>
 #include <c128/cia.h>
 #include "include/defines.h"
+#include "include/core.h"
 #include "include/mount_common.h"
 #include "include/ultimate_common_lib.h"
 #include "include/ultimate_dos_lib.h"
 #include "include/ultimate_time_lib.h"
-#include "include/ultimate_network_lib.h"
 
 // Global variables
 
@@ -518,7 +518,7 @@ void main (void) {
 
     // Initialize screen
     init();
-    headertext("(C) 2023 Xander Mol");
+    headertext("UMount: Image mounter");
     DrawDrivetypes();
     DrawTargetdrive();
     DrawMenu();

@@ -1,10 +1,6 @@
 #ifndef __DEFINES_H_
 #define __DEFINES_H_
 
-// Global variables
-extern char buffer[81];
-extern char version[25];
-
 // Defines for PEEK and POKE functions
 #define POKE(addr,val)      (*(unsigned char*) (addr) = (val))
 #define POKEW(addr,val)     (*(unsigned*) (addr) = (val))
@@ -42,6 +38,10 @@ extern char version[25];
 #define K_DEL               0x7F
 
 /* Defines for versioning */
+
+// Config file version
+#define configfileversion   1
+
 /* Version number */
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 91

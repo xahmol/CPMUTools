@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "conio.h": "c",
-        "cia.h": "c"
+        "cia.h": "c",
+        "mount_common.h": "c"
     }
 }
