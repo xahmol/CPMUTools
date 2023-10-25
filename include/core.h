@@ -5,18 +5,17 @@
 extern char buffer[81];
 extern char version[25];
 extern unsigned char vdcDispMem;
-extern char configbuffer[101];
 extern char filename[13];
-extern long secondsfromutc; 
-extern unsigned char verbose;
-extern unsigned char ntpon;
-extern char host[81];
-struct mconfig {
+struct ConfigStruct {
+    char ntphost[81];
+    long secondsfromutc;
+    unsigned char verbose;
+    unsigned char ntpon;
     unsigned char auto_override;
     unsigned char valid[4];
     unsigned char target;
 };
-extern struct mconfig mountconfig;
+extern struct ConfigStruct config;
 
 // Function prototypes
 void init();

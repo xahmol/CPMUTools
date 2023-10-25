@@ -111,15 +111,15 @@ void SetValidDrives() {
 
     // Get device info from UCI
     if(!uii_parse_deviceinfo()) {
-        mountconfig.auto_override = 1;
+        config.auto_override = 1;
         firmwareflag = 2;
     }
 
-    if(mountconfig.auto_override) {
+    if(config.auto_override) {
     // Set valid drives with the override settings in the config data
         
         for(drive=0;drive<4;drive++) {
-            validdrive[drive] = mountconfig.valid[drive];
+            validdrive[drive] = config.valid[drive];
         }
     } else {
     // Set valid drives with auto detection
@@ -140,5 +140,5 @@ void SetValidDrives() {
     }
 
     // Set target drive to override if set and valid
-    if(mountconfig.target && validdrive[mountconfig.target-1]) { targetdrive = mountconfig.target; }
+    if(config.target && validdrive[config.target-1]) { targetdrive = config.target; }
 }

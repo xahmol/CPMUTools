@@ -55,13 +55,13 @@ $(CONFIG).com: $(CONFIGSRC)
 	zcc +cpm -lm -DAMALLOC -lc128cpm -o $@ $^
 
 # Building .d64 disk image
-$(SUITE).d64: $(MOUNT).com
+$(SUITE).d64: $(DEPLOYS)
 	$(DEL) $(SUITE).d64 2>$(NULLDEV)
 	$(CTOOLS)cformat $(SUITE).d64
 	$(CTOOLS)ctools $(SUITE).d64 p $(DEPLOYS)
 
 # Building .d71 disk image
-$(SUITE).d71: $(MOUNT).com
+$(SUITE).d71: $(DEPLOYS)
 	$(DEL) $(SUITE).d71 2>$(NULLDEV)
 	$(CTOOLS)cformat -2 $(SUITE).d71
 	$(CTOOLS)ctools $(SUITE).d71 p $(DEPLOYS)

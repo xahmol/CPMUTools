@@ -275,7 +275,11 @@ void DrawDrivetypes() {
         if(!validdrive[drive]) {
             sprintf(buffer+3,"No target");
         } else {
-            sprintf(buffer+3,"%02d, %s %s",drive+8,uii_device_tyoe(uii_devinfo[validdrive[drive]-1].type),(uii_device_tyoe(uii_devinfo[validdrive[drive]-1].power))?"On ":"Off");
+            if(!config.auto_override) {
+                sprintf(buffer+3,"%02d, %s %s",drive+8,uii_device_tyoe(uii_devinfo[validdrive[drive]-1].type),(uii_device_tyoe(uii_devinfo[validdrive[drive]-1].power))?"On ":"Off");
+            } else {
+                sprintf(buffer+3,"%02d, manual.");
+            }
         }
         printstrvdc(51,4+drive,colorText,buffer);
     }    
@@ -390,9 +394,13 @@ void MountImage(ushort target,char* image) {
 
     ushort ult_drive;
 
-    uii_parse_deviceinfo();                                     // Recheck drive statusses
-    EnableDrivePower((uii_devinfo[0].id == target+7)?0:1);      // Enable drive A if powered off
-    uii_mount_disk(target+7,image);                             // Mount image
+    // Recheck drive statusses and see if power on/off is supported
+    if(uii_parse_deviceinfo()) {
+        EnableDrivePower((uii_devinfo[0].id == target+7)?0:1);  // Enable drive A if powered off
+    }                                     
+
+    // Mount image
+    uii_mount_disk(target+7,image);                             
 
     // Print error message or success message
     if(!CheckUCIStatus()) {
@@ -507,7 +515,6 @@ void main (void) {
     presentdir.firstelement = 0;
 
     // Get config data
-    memset(&mountconfig,0,sizeof(mountconfig));
     ReadConfigfile(0);
 
     // Get valid UII+ drives

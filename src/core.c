@@ -57,16 +57,20 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "include/ultimate_time_lib.h"
 
 // Global variables
-char buffer[81];
-char version[25];
-ushort vdcDispMem;
-char configbuffer[101];
-char filename[13] = "cpmutool.cfg";
-struct mconfig mountconfig;
-long secondsfromutc = 3600; 
-char host[81] = "pool.ntp.org";
-unsigned char verbose = 0;
-unsigned char ntpon = 1;
+char buffer[81];                        // Buffer memory for tempory storage
+char version[25];                       // Version info string
+ushort vdcDispMem;                      // Variable for VDC display memory start, to be set with vdcmap()
+char filename[13] = "cpmutool.cfg";     // Filename for configuration file
+
+// Default config settings
+// NTP server host name: pool.ntp.org is default
+// Seconds from UTC: 3600 is Central European Time (Central European Summer Time would be 7200)
+// UTime verbosoty: UTime gives textual feedback (1) or remains silent (0, default)
+// NTP on: set time via NTP server on (1, default) or synch with UII+ RTC only (0)
+// Auto pverride: Detect valid drives for mounting images automatically (1) or manually (0)
+// Valid: manual setting of drive validity, 1=valid, 0=no target.
+// Target: target drive on starting UMount, 0 is default and sets on first valid drive as target
+struct ConfigStruct config = { "pool.ntp.org",3600,0,1,0,{0,0,0,0},0 };
 
 // Common routines for CPMUMount and CPMUConfig
 
@@ -262,34 +266,13 @@ void WriteConfigfile(unsigned char vdcmode) {
         printstrvdc(0,24,colorText,"Writing configuration file. Please wait.");
     }
 
-    // Clear configbuffer
-    memset(configbuffer,0,101);
-
-    // Copy host to savebuffer
-    strcpy(configbuffer, host);
-
-    // Copy UTC offset to savebuffer
-    sprintf(configbuffer+80,"%ld",secondsfromutc);
-
-    // Copy verbose flag to savebuffer
-    configbuffer[92] = verbose+48;
-
-    // Copy NTP on flag to savebuffer
-    configbuffer[93] = ntpon+48;
-
-    // Copy config file version
-    configbuffer[94] = configfileversion + 48;
-
-    // Copy mount config
-    memcpy(&configbuffer+95,&mountconfig,sizeof(mountconfig));
-
     // Open file for write
     file = fopen(filename,"w");
     if(!file) { ErrorMessage("opeming for write",1); }
 
     // Write to file
     if(!vdcmode) { printf("Write to file.\n\r"); }
-    if(!fwrite(&configbuffer,101,1,file)) { fclose(file); ErrorMessage("writing",1); }
+    if(!fwrite(&config,sizeof(config),1,file)) { fclose(file); ErrorMessage("writing",1); }
 
     // Close file
     if(!vdcmode) { printf("Close file.\n\r"); } else { ClearArea(0,24,80,1); }
@@ -300,7 +283,6 @@ void ReadConfigfile(unsigned char vdcmode) {
 // Read config file
 
     FILE* file;
-    char* ptrend;
 
     if(!vdcmode) { printf("Open config file for reading.\n\r"); } else {
         printstrvdc(0,24,colorText,"Reading configuration file. Please wait.");
@@ -314,26 +296,9 @@ void ReadConfigfile(unsigned char vdcmode) {
 
     // Reading file
     if(!vdcmode) { printf("Reading from file.\n\r"); }
-    if(!fread(&configbuffer,101,1,file)) { fclose(file); ErrorMessage("reading",1); }
+    if(!fread(&config,sizeof(config),1,file)) { fclose(file); ErrorMessage("reading",1); }
 
     // Close file
     if(!vdcmode) { printf("Close file.\n\r"); } else { ClearArea(0,24,80,1); }
     fclose(file);
-
-    // Reading verbose flag
-    verbose = configbuffer[92]-48;
-
-    // Reading ntp on flag
-    ntpon = configbuffer[93]-48;
-
-    // Reading hostname
-    strlcpy(host, configbuffer,80);
-
-    // Reading UTC offset
-    strlcpy(buffer,configbuffer+80,12);
-    buffer[13]=0;
-    secondsfromutc = strtol(buffer,&ptrend,10);
-
-    // Reading mount config
-    memcpy(&mountconfig,configbuffer+95,sizeof(mountconfig));
 }
