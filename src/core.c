@@ -70,7 +70,7 @@ char filename[13] = "cpmutool.cfg";     // Filename for configuration file
 // Auto pverride: Detect valid drives for mounting images automatically (1) or manually (0)
 // Valid: manual setting of drive validity, 1=valid, 0=no target.
 // Target: target drive on starting UMount, 0 is default and sets on first valid drive as target
-struct ConfigStruct config = { "pool.ntp.org",3600,0,1,0,{0,0,0,0},0 };
+struct ConfigStruct config = { "pool.ntp.org",3600,1,1,0,{0,0,0,0},0 };
 
 // Common routines for CPMUMount and CPMUConfig
 
@@ -262,8 +262,10 @@ void WriteConfigfile(unsigned char vdcmode) {
 
     FILE* file;
 
-    if(!vdcmode) { printf("Open config flle for writing.\n\r"); } else {
+    if(vdcmode) {
         printstrvdc(0,24,colorText,"Writing configuration file. Please wait.");
+    } else {
+        if(config.verbose) { printf("\nWriting configuration file."); }
     }
 
     // Open file for write
@@ -271,11 +273,9 @@ void WriteConfigfile(unsigned char vdcmode) {
     if(!file) { ErrorMessage("opeming for write",1); }
 
     // Write to file
-    if(!vdcmode) { printf("Write to file.\n\r"); }
     if(!fwrite(&config,sizeof(config),1,file)) { fclose(file); ErrorMessage("writing",1); }
 
     // Close file
-    if(!vdcmode) { printf("Close file.\n\r"); } else { ClearArea(0,24,80,1); }
     fclose(file);
 }
 
@@ -284,10 +284,10 @@ void ReadConfigfile(unsigned char vdcmode) {
 
     FILE* file;
 
-    if(!vdcmode) { printf("Open config file for reading.\n\r"); } else {
+    if(vdcmode) {
         printstrvdc(0,24,colorText,"Reading configuration file. Please wait.");
     }
-
+    
     // Open file for read
     file = fopen(filename,"r");
 
@@ -295,10 +295,9 @@ void ReadConfigfile(unsigned char vdcmode) {
     if(!file) { ClearArea(0,24,80,1); WriteConfigfile(vdcmode); return; }
 
     // Reading file
-    if(!vdcmode) { printf("Reading from file.\n\r"); }
     if(!fread(&config,sizeof(config),1,file)) { fclose(file); ErrorMessage("reading",1); }
 
     // Close file
-    if(!vdcmode) { printf("Close file.\n\r"); } else { ClearArea(0,24,80,1); }
+    if(vdcmode) { ClearArea(0,24,80,1); }
     fclose(file);
 }

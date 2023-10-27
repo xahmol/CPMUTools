@@ -5,10 +5,11 @@ CTOOLS = /home/xahmol/ctools/bin/
 # Application name
 SUITE 		= cpmutools
 MOUNT 		= umount
+TIME		= utime
 CONFIG		= uconfig
 
 # Deploy list
-DEPLOYS		= $(MOUNT).com $(CONFIG).com
+DEPLOYS		= $(MOUNT).com $(TIME).com $(CONFIG).com
 
 # Zip file data
 README		= README.pdf
@@ -18,8 +19,11 @@ ZIPLIST		= $(SUITE).d64 $(SUITE).d71 README.pdf
 # Sources for CPMUMount
 MOUNTSRC	= src/mount.c src/core.c src/mount_common.c src/ultimate_common_lib.c src/ultimate_dos_lib.c src/ultimate_time_lib.c
 
-# Sources for CPMUMount
-CONFIGSRC	= src/config.c src/core.c src/mount_common.c src/time_common.c src/ultimate_common_lib.c src/ultimate_dos_lib.c src/ultimate_time_lib.c
+# Sources for CPMUTime
+TIMESRC		= src/time.c src/core.c src/ultimate_common_lib.c src/ultimate_dos_lib.c src/ultimate_time_lib.c src/ultimate_network_lib.c
+
+# Sources for CPMUConfig
+CONFIGSRC	= src/config.c src/core.c src/mount_common.c src/ultimate_common_lib.c src/ultimate_dos_lib.c src/ultimate_time_lib.c
 
 # Hostname of Ultimate II+ target for deployment. Edit for proper IP and usb number
 ULTHOST		= ftp://192.168.1.19/usb1/cpm/
@@ -49,6 +53,9 @@ all: $(DEPLOYS) $(SUITE).d64 $(SUITE).d71 $(ZIP)
 
 # Building  CPMUMount
 $(MOUNT).com: $(MOUNTSRC)
+	zcc +cpm -lm -DAMALLOC -lc128cpm -o $@ $^
+
+$(TIME).com: $(TIMESRC)
 	zcc +cpm -lm -DAMALLOC -lc128cpm -o $@ $^
 
 $(CONFIG).com: $(CONFIGSRC)
