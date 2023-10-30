@@ -24,9 +24,9 @@ Toolset for using the Ultimate II+ cartridge for C128 CP/M
 ## Version history and download
 ([Back to contents](#contents))
 
-[Link to latest build](https://github.com/xahmol/CPMUTools/raw/main/CPMUTools-v091-20231030-1630.zip)
+[Link to latest build](https://github.com/xahmol/CPMUTools/raw/main/CPMUTools-v091-20231030-1632.zip)
 
-Version v091-20231030-1630:
+Version v091-20231030-1632:
 
 - Added CPM UTime: Utility to retrieve present date and time from an NTP server and synch this time to both the Ultimate II+ Real Time Clock as the CP/M system time
 - Added CPM UConfig: Utility to set the configuration options for UTime and UMount
