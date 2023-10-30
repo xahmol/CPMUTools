@@ -481,7 +481,7 @@ void saveREU() {
     // Save REU image
     uii_open_file(0x06,savename);
     if(CheckUCIStatus()) { return; }
-    uii_save_reu(reusize);
+    uii_save_reu(reusizes[reusize]);
     if(CheckUCIStatus()) { return; }
     uii_close_file();
     ClearArea(0,24,80,1);
