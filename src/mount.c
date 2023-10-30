@@ -1,6 +1,6 @@
 /*
 CPMUMount
-Disk mounter for the Ultimate II+ in CPMS
+Disk mounter for the Ultimate II+ in CP/M
 Written in 2023 by Xander Mol
 
 https://github.com/xahmol/CPMUTools
