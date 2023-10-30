@@ -53,7 +53,7 @@ Link to Ultimate II/II+/II+L firmware:
 
 ### Ultimate II/II+/II+L setting requirements
 
-![Ultimate Cartridge Settings](https://github.com/xahmol/CPM UTools/blob/main/screenshots/u2p-settings.png?raw=true)
+![Ultimate Cartridge Settings](https://github.com/xahmol/GeoUTools/blob/main/screenshots/u2p-settings.png?raw=true)
 
 For CPM UTools it is important to check these settings in the C64 and Cartridge Settings menu after pressing F2 from the UI:
 - Command Interface: **IMPORTANT** This setting has to be set to 'enabled' for anything in CPM UTools to work
@@ -89,167 +89,90 @@ As a real 1571 drive is way faster than a 1541 drive, also the emulated 1571 dri
 
 Contents of both images:
 
-![CPM UTools disk](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20contentsfirst.png)
+![CPM UTools disk](https://github.com/xahmol/CPMUTools/blob/main/screenshots/umount%20-%20diskcontents.png?raw=true)
 
-- **CPM UMount**: Disk mounting tool
-- **CPM UTime**: NTP time synching tool
-- **CPM UConfig**: Utility to set configuration options for CPM UTime
+|Filename|Program|Description|
+|---|---|---|
+|UMOUNT.COM|**CPM UMount**|Disk mounting tool|
+|UTIME.COM|**CPM UTime**|NTP time synching tool
+|UCONFIG.COM|**CPM UConfig**|Utility to set configuration options for CPM UTime|
+|CPMUTOOL.CFG|Coniguration file|File containing configuration settings for the tools|
 
-Double click on the desired icon of the three to start the corresponding utility.
-
-Note that on first use, both CPM UTime and CPM UConfig create a configuration file on the disk if no one is yet present. After this, the contents of the disk look like this:
-
-![Configuration file added on disk](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20contents%20data.png)
-
-A new file called CPM UTimeDat is added to store configuration data.
+Note that on first use, both CPM UTime and CPM UConfig create a configuration file on the disk if no one is yet present. A new file called CPMUTOOL.CFG is added to store configuration data.
 
 Obviously, you are free (even encouraged) to copy these files to another disk target, such as your main RAM drive.
+
+You can start UMount, UTime, or UConfig by typing the filename (typing the .com is not needed) and enter.
 
 ## CPM UConfig instructions
 ([Back to contents](#contents))
 
-This application sets the configuration options for CPM UTIme and saves them in the CPM UTimeDat configuration file. It creates this file on first start if no file is present already.
+This application sets the configuration options for CPM UTIme and saves them in the CPMUTOOL.CFG configuration file. It creates this file on first start if no file is present already.
 
 Interface after application start, showing the present configuration settings:
 
-![CPM UTimeCfg main interface](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20mainscreen.png?raw=true)
+![CPM UConfig main interface](https://github.com/xahmol/CPMUTools/blob/main/screenshots/uconfig%20-%20mainscreen.png?raw=true)
 
-The options can be reached via the main menu in the top left corner. The interface will update on changed settings. All changed will be automatically saved.
+Navigate through the editable options by pressing the **CURSOR DOWN** or **CURSOR UP** cursor keys.
 
-Under 'CPM UMount config data' you can also see if autodetection of valid drive targets succeeded. This line can show the following options:
+**ESC** will quit the configuration program and save the settings if changed.
 
-- Autodetection of valid drives succeeded: Firmware supports improved automated drive detection (firmware 3.10f and newer)
-- Autodetection might be incorrect: Autodetection is supported, but based on hardware ID instead of software ID, so it might be wrong. Check the detected settings and manually adjust if needed (firmware 3.xx up to 3.10e)
-- Autodetection not supported in firmware: Autodetection is not supported, so manual selection of valid targets is required. Detection override is forced on 'Enabled' (firmware before 3.xx)
+**RETURN** selects the highlighted option for editing.
 
-### CP/M menu
+### UMount settings
 
-Options in this menu:
+|Option|Explanation|How to edit|
+|---|---|---|
+|Detection override|Rely on automated detection of valid target drives (setting is **No**), or manually select valid targets (setting is **Yes**)|Press **RETURN** to toggle between **Yes** and **No**|
+|Autodetection of valid drives succeeded|Shows if firnware support automatic drive detection|Not an option to change|
+|A B C D|Setting per CP/M drive: either is **No target** or it is a valid target, in which case it shows the drive ID, type and power status|If Detection override is set as Yes, **RETURN** toggles between No target and Manual Target|
+|Target drive|Drive to which images will be mounted|Press **RETURN** to edit this option, then press **CURSOR DOWN** or **CURSOR UP** to change the drive letter, press **RETURN** to confirm, or press **ESC** to cancel.|
 
-![CP/M menu](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20CP/M%20menu.png?raw=true)
+***Screenshots***
 
-*Switch 40/80*
+- Detection override
 
-(Only works in CP/M128, ignored in CP/M64)
+![Detection override](https://github.com/xahmol/CPMUTools/blob/main/screenshots/uconfig%20-%20toggleoverride.png?raw=true)
 
-Switches between 40 and 80 column mode. On selecting, the other mode will be selected, and the screen will be redrawn. If a single monitor is used, switch monitor to the corresponding other mode to view.
+- Toggle targets
 
-*Credits*
+![Toggle targets](https://github.com/xahmol/CPMUTools/blob/main/screenshots/uconfig%20-%20toggletargets.png?raw=true)
 
-Selecting this option shows the application credits:
+- Set target
 
-![CPM UTime credits](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20CP/M%20credits.png?raw=true)
+![Set target](https://github.com/xahmol/CPMUTools/blob/main/screenshots/uconfig%20-%20settarget.png?raw=true)
 
-Press OK to leave the credits dialogue box.
+### UTime Settings
 
-*Exit*
+|Option|Explanation|How to edit|
+|---|---|---|
+|NTP host|Host name of the desired NTP server. The default server is pool.ntp.org.|Press **RETURN** to select option, then enter desired host by typing it, edit by using the **CURSOR LEFT** and **CURSOR RIGHT** keys, **DEL** to delete, **RETURN** to confirm entry, **ESC** to cancel.|
+|UTC offset|Time offset to UTC (Universal standard time) in seconds.|Press **RETURN** to select option, then enter desired offset by typing it (noting the signing, so do not forget the minus sign if offsets are negative to UTC), edit by using the **CURSOR LEFT** and **CURSOR RIGHT** keys, **DEL** to delete, **RETURN** to confirm entry, **ESC** to cancel.|
+|Update from HTP|Sets if time should be synched with the selected NTP server (setting is 'Enabled'), or if only the CP/M system time should be synched to the UII+ Real Time Clock without an NTP request (Disabled).|Press **RETURN** to toggle between Enabled and Disabled.|
+|Verbose|Enabling this option makes the CPM UTime give visual feedback on the steps it performs, disabling will make CPM UTime perform its actions without any visual feedback.|Press **RETURN** to toggle between Enabled and Disabled.|
 
-Exits to the CP/M desktop and quits the application.
+***Detailed explanation and screenshots***
 
-### Time menu
+- NTP Host: The application will not check validity of the input, to check if it works and the hostname resolves and results in a successful connection the verbose mode is suggested.
 
-Options in this menu:
+![NTP host](https://github.com/xahmol/CPMUTools/blob/main/screenshots/uconfig%20-%20edithost.png?raw=true)
 
-![Time menu](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20time%20menu.png?raw=true)
+- UTC offset: Offset is set in seconds (to allow for half hour difference time zones and also for finetuning if desired), so multiply the UTC offset in hours by 3600. And note that the offset is signed, so start with a minus for offsets negative to UTC. Default is set on Central European Time, which requires an offset of 3600. Setting to Central European Summer Time would require 7200. Another example: setting to Eastern Standard Time (EST, time zone for a.o. New York City) would be UTC -5, so -5*3600 = -18000. See https://www.timeanddate.com/time/zones/ for all offsets in hours (multiply by 3600 to get to seconds). No inout validation is performed.
 
-*Enable NTP*
+![UTC offset](https://github.com/xahmol/CPMUTools/blob/main/screenshots/uconfig%20-%20editoffset.png?raw=true)
 
-Choose if time should be synched with the selected NTP server (setting is 'On'), or if only the CP/M system time should be synched to the UII+ Real Time Clock without an NTP request.
+- Update from NTP and verbose:
 
-Selecting this option gives this dialogue:
-
-![NTP enable dialogue](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20time%20ntp%20enable.png?raw=true)
-
-Select Yes to enable, No to disable.
-
-*Hostname*
-
-Enter the hostname of the desired NTP server. The default server is pool.ntp.org.
-
-This option results in this dialogue:
-
-![Hostname dialogue](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20%20time%20hostname.png?raw=true)
-
-For another NTP server, just enter its hostname (URL or IP). The application will not check validity of the input, to check if it works and the hostname resolves and results in a successful connection the verbose mode is suggested.
-
-To keep the present hostname, press either CANCEL or ENTER.
-
-*UTC offset*
-
-Edits the time offset to UTC (Universal standard time). The offset needs to be provided in seconds. Automated adjustment for daylight savings ('Summer' and 'Winter' time) is not provided, so you have to adjust your offset on the change from daylight saving time to not.
-
-Offset is set in seconds (to allow for half hour difference time zones and also for finetuning if desired), so multiply the UTC offset in hours by 3600. And note that the offset is signed, so start with a minus for offsets negative to UTC.
-
-Default is set on Central European Time, which requires an offset of 3600. Setting to Central European Summer Time would require 7200. Another example: setting to Eastern Standard Time (EST, time zone for a.o. New York City) would be UTC -5, so -5*3600 = -18000.
-
-See https://www.timeanddate.com/time/zones/ for all offsets in hours (multiply by 3600 to get to seconds).
-
-This option presents this dialogue:
-
-![UTC offset dialogue](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20%20time%20utc%20offset.png?raw=true)
-
-Type the desired offset (noting the signing, so do not forget the minus sign if offsets are negative to UTC) and press ENTER. CANCEL to keep present value.
-
-*Verbose*
-
-Enable or disable the verbosity flag. Enabling this option makes the CPM UTime give visual feedback on the steps it performs, disabling will make CPM UTime perform its actions without any visual feedback.
-
-Enabling is useful for debugging hostname and UTC offset settings, or if you just are curious. Disabling is recommended for day to day use as auto executing application at boot time.
-
-Selecting this option gives this dialogue:
-
-![Verbose dialogue](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20%20time%20verbosity.png?raw=true)
-
-Select Yes for verbose mode, No for silent mode.
-
-### Mount menu
-
-Options in this menu:
-
-![Mount menu](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20mount%20menu.png?raw=true)
-
-*Enable override*
-
-With this menu option you can enable or disable overriding the automated valid target detection for CPM Umount. This menu option gives this dialogue box:
-
-![Enable override dialogie](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20mount%20override.png?raw=true)
-
-Select Yes to enable manual override, No to use automatic target detection.
-
-*Set drive*
-
-With this menu option you can enable or disable drive A to D as valid target via this submenu:
-
-![Set drive submenu](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20mount%20set%20drive.png?raw=true)
-
-Choose the desired drive to change from this submenu. This gives this dialogue box:
-
-![Set drive as valid dialogue](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20mount%20set%20drive%20valid.png?raw=true)
-
-Select Yes to set the drive as valid target, No to select drive not to be a valid target.
-
-*Set target*
-
-With this menu option you can set the default active target drive. Without setting this manually, the target drive is set as the first encountered valid target.
-
-You can select the target drive via the submenu:
-
-![Set target submenu](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UConfig%20mount%20set%20target.png?raw=true)
-
-Selecting a drive via this submenu will change the target setting. Selecting Auto will revert to just selecting the first encountered valid drive.
+![Time toggles](https://github.com/xahmol/CPMUTools/blob/main/screenshots/uconfig%20-%20toggletime.png?raw=true)
 
 ## CPM UTime instructions
 ([Back to contents](#contents))
 
 This application is driven by the options stored in the configuration file and does not need further user interaction.
 
-It is an auto exec application, so it should be started automatically if placed on the boot disk/drive. Therefore, it is recommended to use verbosity only incidentally and switch it off after use. It is also possible to start the application manually.
+If verbosity is set to no in the configuration file options, nothing will be shown on the screen. If verbosity mode is 'Enabled' and NTP enable is 'Enabled', something like this will be shown on the screen:
 
-If verbosity is set to no in the configuration file options, nothing will be shown on the screen apart from the screen blanking during execution and the system time being updated after returning to the desktop.
-
-If verbosity mode is 'On' and NTP enable is 'On', something like this will be shown on the screen:
-
-![CPM UTime verbosity output](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM Utime%20verbose%20output.png)
+![CPM UTime verbosity output](https://github.com/xahmol/CPMUTools/blob/main/screenshots/utime%20-%20verboseoutput.png?raw=true)
 
 This mode is meant to either debug your configuration settings, or if you are simply curious what happens:
 - Connecting to the selected hostname of the desired NTP server
@@ -260,8 +183,6 @@ This mode is meant to either debug your configuration settings, or if you are si
 - Setting the UII+ Real Time Clock with that time
 - Synching CP/M system time with the UII+ RTC clock.
 - Confirming success
-
-Click the Quit icon to exit.
 
 Note that on any NTP connection error, the CP/M clock will be synched to the unchanged UII+ RTC clock as fallback.
 
