@@ -16,13 +16,13 @@ README		= README.pdf
 ZIP			= CPMUTools-v091-$(shell date "+%Y%m%d-%H%M").zip
 ZIPLIST		= $(SUITE).d64 $(SUITE).d71 README.pdf
 
-# Sources for CPMUMount
+# Sources for CPM UMount
 MOUNTSRC	= src/mount.c src/core.c src/mount_common.c src/ultimate_common_lib.c src/ultimate_dos_lib.c src/ultimate_time_lib.c
 
-# Sources for CPMUTime
+# Sources for CPM UTime
 TIMESRC		= src/time.c src/core.c src/ultimate_common_lib.c src/ultimate_dos_lib.c src/ultimate_time_lib.c src/ultimate_network_lib.c
 
-# Sources for CPMUConfig
+# Sources for CPM UConfig
 CONFIGSRC	= src/config.c src/core.c src/mount_common.c src/ultimate_common_lib.c src/ultimate_dos_lib.c src/ultimate_time_lib.c
 
 # Hostname of Ultimate II+ target for deployment. Edit for proper IP and usb number
@@ -82,5 +82,5 @@ clean:
 
 # To deploy software to UII+ enter make deploy. Obviously C128 needs to powered on with UII+ and USB drive connected.
 deploy: $(SUITE).d71
-	wput -u $(SUITE).d71 $(ULTHOST)
-#	wput -u $(SUITE).d71 $(ULTHOST2)
+#	wput -u $(SUITE).d71 $(ULTHOST)
+	wput -u $(SUITE).d71 $(ULTHOST2)

@@ -450,7 +450,7 @@ void saveREU() {
         } else {
             // Delete existing file if YES on overwrite
             uii_delete_file(savename);
-            if(!CheckUCIStatus()) { return; }
+            if(CheckUCIStatus()) { return; }
         }
     } else {
         uii_abort();
@@ -480,14 +480,14 @@ void saveREU() {
 
     // Save REU image
     uii_open_file(0x06,savename);
-    if(!CheckUCIStatus()) { return; }
+    if(CheckUCIStatus()) { return; }
     uii_save_reu(reusize);
-    if(!CheckUCIStatus()) { return; }
+    if(CheckUCIStatus()) { return; }
     uii_close_file();
     ClearArea(0,24,80,1);
 
     // Print result
-    if( !CheckUCIStatus() ) {
+    if( CheckUCIStatus() ) {
         printstrvdc(0,24,colorSucces,"Succes! ");
         sprintf(buffer,"Saved %d KB to %s. Press key.",(reusizes[reusize]+1)*64,savename);
         printstrvdc(8,24,colorText,buffer);

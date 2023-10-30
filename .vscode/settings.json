@@ -3,5 +3,6 @@
         "conio.h": "c",
         "cia.h": "c",
         "mount_common.h": "c"
-    }
+    },
+    "C_Cpp.default.compilerPath": "/home/xahmol/z88dk/bin/zcc"
 }
