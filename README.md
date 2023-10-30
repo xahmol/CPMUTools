@@ -1,4 +1,4 @@
-# CPMUTools
+# CPM UTools
 Toolset for using the Ultimate II+ cartridge for C128 CP/M
 
 ## Contents
@@ -11,11 +11,11 @@ Toolset for using the Ultimate II+ cartridge for C128 CP/M
 
 [What is on the disk](#what-is-on-the-disk)
 
-[CPM UConfig instructions](#CPM Uconfig-instructions)
+[CPM UConfig instructions](#cpm-uconfig-instructions)
 
-[CPM UTime instructions](#CPM Utime-instructions)
+[CPM UTime instructions](#cpm-utime-instructions)
 
-[CPM UMount instructions](#CPM Umount-instructions)
+[CPM UMount instructions](#cpm-umount-instructions)
 
 [Credits](#credits)
 
@@ -24,9 +24,9 @@ Toolset for using the Ultimate II+ cartridge for C128 CP/M
 ## Version history and download
 ([Back to contents](#contents))
 
-[Link to latest build](https://github.com/xahmol/CPMUTools/raw/main/CPMUTools-v091-20231030-1147.zip)
+[Link to latest build](https://github.com/xahmol/CPMUTools/raw/main/CPMUTools-v091-20231030-1630.zip)
 
-Version v091-20231030-1147:
+Version v091-20231030-1630:
 
 - Added CPM UTime: Utility to retrieve present date and time from an NTP server and synch this time to both the Ultimate II+ Real Time Clock as the CP/M system time
 - Added CPM UConfig: Utility to set the configuration options for UTime and UMount
@@ -191,12 +191,11 @@ If NTP enable is switched to off, only the synch between UII+ RTC and the CP/M s
 ## CPM UMount instructions
 ([Back to contents](#contents))
 
-This application enables to mount disk images on the UII+ filesystem to an UII+ emulated drive or CP/M RAM drive (if enabled and supported in firmware version) in CP/M via a file browser.
+This application enables to mount disk images on the UII+ filesystem to an UII+ emulated drive in CP/M via a file browser.
 
 ### Application limitations and considerations
-The application ensures only disk images can be selected to mount that correspond with the drive type of the target drive by filtering the file list to show only the corresponding image type.
 
-This is done as CP/M crashes if the drive type of any of the active CP/M drive is changed on the fly by for example mounting a .D64 image to a 1581 emulated drive. As CP/M is not aware of the changed disk type, it will load the wrong turbo load code on the drive, which makes CP/M crash or freeze. By filtering the file list, this should be prevented.
+To facilitate to find disk images quicker and easier in the filebrowsers, all entries not being directories and file images are filtered out.
 
 To properly enable filtering, image filenames should end with the proper corresponding .dxx extension:
 
@@ -204,142 +203,23 @@ To properly enable filtering, image filenames should end with the proper corresp
 - .g64 for 1541 drive type or 1571 drive type
 - .d71 for 1571 drive type
 - .d81 for 1581 drive type
-- .dnp for RAM Native drive images
 
 Other image types are not presently supported.
 
 Also note that file and dirnames can only be selected if they have a maximum name length of 20 characters, including extension. Reason is memory constraints: allowing for longer filenames would cause less filenames that can be loaded in memory. If you need to select dirs or files with longer names, shorten them first to 20 chars (including extension) at most.
 
-Maximum number of files shown is dependent on the free memory on the target system used but should normally be around 250 files. If you have more valid images or subdirectories in your present directory, any entry over that number will not be shown. If you need to reach these dirs or files, consider reorganizing your dir to place the files in subdirs with fewer entries.
+Maximum number of files shown is dependent on the free memory on the target system used. If you have more valid images or subdirectories in your present directory, any entry over that number will not be shown. If you need to reach these dirs or files, consider reorganizing your dir to place the files in subdirs with fewer entries.
 
 ### Main interface
 
 After start, this main interface is shown:
 
-![CPM UMount main interface](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20mainscreen.png)
+![CPM UMount main interface](https://github.com/xahmol/CPMUTools/blob/main/screenshots/umount%20-%20mainscreen.png?raw=true)
 
-### Main menu
+On the left the filebrowser is shown. First line is the ID of the Ultimate file system detected, second line shows the present path on that filesystem.
+Below those two lines the filtered file list is shown in two columns. You can navigate to images and browse through directories here.
 
-**CP/M menu**
-
-Options in this menu:
-
-![CP/M menu](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20CP/M%20menu.png)
-
-*Switch 40/80*
-
-(Only works in CP/M128, ignored in CP/M64)
-
-Switches between 40 and 80 column mode. On selecting, the other mode will be selected, and the screen will be redrawn. If a single monitor is used, switch monitor to the corresponding other mode to view.
-
-*Credits*
-
-This menu option shows this dialogue:
-
-![Credits CPM UMount](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20credits.png)
-
-*Exit*
-
-Exits to the CP/M desktop and quits the application.
-
-**Save REU menu**
-
-In this menu the contents of the REU memory can be saved to a .reu file in the presently active directory.
-
-Select the memory size to save via this submenu:
-
-![Save REU choose memory size to save](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UMount%20save%20reu%20menu.png?raw=true)
-
-Then a dialogue box asks for a filename for the image to save. Enter filename or press Cancel to cancel.
-
-![Save REU filename dialogue](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UMount%20save%20reu%20filename.png?raw=true)
-
-If already a file with that name exists in the active directory, a new dialogue asks to confirm or cancel.
-
-![Save REU file exists dialogue](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UMount%20save%20reu%20file%20exists.png?raw=true)
-
-Depending on selected memory size, saving can take a while. After success, a message like this is shown.
-
-![Save REU succes](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UMount%20save%20reu%20file%20succes.png?raw=true)
-
-
-### Selecting the target drive
-
-The target drive selection area is the upper right area in the main interface:
-
-![Target drive area](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20drivetarget.png)
-
-In this area you can select the target drive to mount the selected disk image to.
-
-The text right of the icons A, B, C and D show if this drive letter can be selected as valid target to mount images to via the Ultimate II+ cartridge. Obviously only those drive letters that correspond active drives emulated by the UII+ can selected. If the drive letter is not a valid target, the text 'No target' is shown to the right of the button. If it corresponds to a valid target, the type of the emulated drive is presented (supported for now are emulated 1541, 1571 and 1581 drives).
-
-CPM UMount presently does not support changing this drive configuration from within the application. Use the standard Configure app to change drive configuration if desired.
-
-Pressing the icon of a valid drive target will change the target to this drive. If the drive type of the new target drive is different than the type of the old target, a refresh of the presently shown directory will be triggered to apply filtering for this new drive type.
-
-### File browser navigation icons
-
-This section is the lower right area of the main interface:
-
-![Navgiation icons section](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20navicons.png)
-
-|Icon|Function|
-|---|---|
-|![Back icon](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20back%20icon.png)|Pressing this icon moves the present directory shown to the parent directory of the presently selected directory.|
-|![Root icon](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20back%20root.png)|Pressing this icon moves the present directory shown to the root directory of the filesystem.|
-|![Home icon](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20back%20home.png)|Pressing this icon moves the present directory shown to the directory configured as home dir in the UII+ interface options.|
-|![Top icon](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20back%20pageup.png)|Pressing this icon moves to the top of the file list in the present shown directory.|
-|![Bottom icon](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20back%20pagedown.png)|Pressing this icon moves to the bottom of the file list in the present shown directory.|
-|![Save icon](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UMount%20save%20image.png?raw=true)|Pressing this icon saves the contents of the active RAM drive to an image.|
-
-**Save image icon**
-
-This button only works if the selected target drive is a RAM drive, otherwise clicking this icon will be ignored.
-
-With clicking this icon, the contents of the target RAM drive can be saved to an image file in the presently active directory. Extension will be based on the drive type of the target drive.
-
-First a filename will be asked, enter filename, or click Cancel to cancel.
-
-![Save Image filename dialogue](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UMount%20save%20image%20filename.png?raw=true)
-
-If a file with this filename already exists, a confirmation dialogue box will pop up. Click Yes to confirm and overwrite the existing file, No to cancel.
-
-![File exists dialogue](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UMount%20save%20image%20file%20exists.png?raw=true)
-
-Depending on size of the image, saving can take a while. On success, this message will pop up. Click OK to continue.
-
-![Image save success dialogue](https://github.com/xahmol/CPM UTools/blob/main/screenshots/CPM Utools%20-%20CPM UMount%20save%20image%20file%20succes.png?raw=true)
-
-
-### File browser: pathname
-
-![file browser path name](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20file browser%20id%20path.png)
-
-This section shows the path of the presently selected directory, next to the identification (Ultimate DOS version) of the UII+ file system Ultimate Command Interface DOS target.
-
-### File browser: line scroll arrows
-
-![file browser linescroll](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20file browser%20linescroll.png)
-
-By clicking on the arrow icons in the file browser area you can scroll one entry up (upper arrow icon) or down (lower arrow icon).
-
-### File browser: page up and page down
-
-![file browser page scroll](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20file browser%20pagescroll.png)
-
-By clicking on the upper and lower scrollbar areas in the file browser area you can scroll one page up (upper scrollbar area) or down (lower scrollbar area).
-
-### File browser: file list
-
-![file browser file list](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20file browser%20dirs%20and%20files.png)
-
-This area shows the visible part of the file and directory list of the presently selected directory. 13 files or directories can be shown visibly, use the scroll or navigation icons/areas to move the visible part.
-
-In the left column the name of the file or directory is shown, in the right column the type.
-
-Types:
-
-![Types](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20too%20long.png)
+In the filebrowser section, entries are shown with a three letter explanation of the type:
 
 |Code|Description|
 |---|---|
@@ -348,7 +228,28 @@ Types:
 |D71|1571 images with .d71 extension|
 |D81|1581 images with .d81 extension|
 |!TL|Name too long to be fully shown. Can not be selected without shortening name|
-|!IS|DNP image with a size not matching size of target drive|
+
+On the right top, the detected drives and present target drive is shown.
+
+![Drives](https://github.com/xahmol/CPMUTools/blob/main/screenshots/umount%20-%20drives.png?raw=true)
+
+Below that help for the available key commands is shown:
+
+|Key|Function|
+|---|---|
+|**A-D**|Select another drive as target by pressing the key to the corresponding drive letter|
+|**CURSOR KEYS**|Navigate the filebrowser area: move in the corresponding direction up, down, left or right|
+|**RETURN**|Select the highlighted file to mount (is ignored if a dir (DIR) or if the filename is too long (!TL) ) |
+|**P** / **U**|Navigate one page up (**U**) or one page down (**P**)|
+|**T** / **E**|Navigate to the first item (**T**) or to the last one (**E**)|
+|**DEL**|Navigate to the parent directory|
+|**R**|Navigate to the root directory|
+|**H**|Navigate to the home directory|
+|**S**|Save REU file in present directory|
+|**I**|Show version information|
+|**ESC**|Quit program|
+
+*** Detailed explanation***
 
 **Moving to a subdirectory**
 
@@ -356,17 +257,43 @@ Move to a subdirectory by clicking on the desired directory name shown.
 
 **Selecting an image to mount**
 
-Select an image to mount by clicking on a valid filename (so type .d64, .d71 or .d81 dependent on selected target drive).
+Select an image to mount by pressing **RETURN** when a valid filename is highlighted (so type .d64, .d71 or .d81).
 
 On success, the following dialogue is presented:
 
-![Image mount dialogue](https://raw.githubusercontent.com/xahmol/CPM UTools/main/screenshots/CPM Utools%20-%20CPM UMount%20mount%20confirm.png)
+![Image mount dialogue](https://github.com/xahmol/CPMUTools/blob/main/screenshots/umount%20-%20mountsuccess.png?raw=true)
 
 If this is shown, the selected image is already mounted.
 
-Choose No if you want to proceed with CPM UMount (for example if you selected a wrong image or if you want to mount images on other targets as well).
+Press **ESC** to exit the CPM UMount application and go back to the CP/M prompt with the new image mounted to the selected target drive.
 
-Choose Yes to exit the CPM UMount application and go back to the CP/M desktop with the new image mounted to the selected target drive.
+Press any other key if you want to proceed with CPM UMount (for example if you selected a wrong image or if you want to mount images on other targets as well).
+
+**S: Save REU**
+
+By pressing **S**, the contents of the REU memory can be saved to a .reu file in the presently active directory.
+
+First, enter the filename (without .reu extension).
+
+![Enter REU filename](https://github.com/xahmol/CPMUTools/blob/main/screenshots/umount%20-%20savereufilename.png?raw=true)
+
+If a file already exists with this name this is shown:
+
+![REU file exists](https://github.com/xahmol/CPMUTools/blob/main/screenshots/umount%20-%20savereufileexists.png?raw=true)
+
+In this case, press **Y** to proceed and overwrite, **No** to cancel.
+
+Finally, select the memory size to save using the **+** (increase size) and **-** (decrease size) keys, press **RETURN** to confirm:
+
+![Save REU choose memory size to save](https://github.com/xahmol/CPMUTools/blob/main/screenshots/umount%20-%20savereusize.png?raw=true)
+
+Depending on selected memory size, saving can take a while.
+
+**I: Version**
+
+Pressing **I** shows the version information. Press a key to continue.
+
+![Version info](https://github.com/xahmol/CPMUTools/blob/main/screenshots/umount%20-%20version.png?raw=true)
 
 ## Credits
 ([Back to contents](#contents))
