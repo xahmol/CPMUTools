@@ -15,8 +15,8 @@ Patches and pull requests are welcome
 #define _ULTIMATE_NETWORK_LIB_H_
 
 // prototypes
-unsigned char uii_tcpconnect(char* host, unsigned short port);
-unsigned char uii_udpconnect(char* host, unsigned short port);
+unsigned char uii_tcpconnect(char *host, unsigned short port);
+unsigned char uii_udpconnect(char *host, unsigned short port);
 void uii_socketclose(unsigned char socketid);
 int uii_socketread(unsigned char socketid, unsigned short length);
 void uii_socketwrite(unsigned char socketid, char *data);
@@ -39,8 +39,8 @@ int uii_isdataavailable(void);
 int uii_isstatusdataavailable(void);
 
 char uii_tcp_nextchar(unsigned char socketid);
-int uii_tcp_nextline(unsigned char socketid, char*);
-int uii_tcp_nextline_ascii(unsigned char socketid, char*);
+int uii_tcp_nextline(unsigned char socketid, char *);
+int uii_tcp_nextline_ascii(unsigned char socketid, char *);
 void uii_tcp_emptybuffer(void);
 void uii_reset_uiidata(void);
 

@@ -4,5 +4,22 @@
         "cia.h": "c",
         "mount_common.h": "c"
     },
-    "C_Cpp.default.compilerPath": "/home/xahmol/z88dk/bin/zcc"
+    "C_Cpp.default.compilerPath": "/home/xahmol/z88dk/bin/zcc",
+    "cSpell.words": [
+        "Autodetection",
+        "CPMU",
+        "ctools",
+        "firmwareflag",
+        "Hutter",
+        "Jochen",
+        "Leeuwen",
+        "Metzinger",
+        "Plap",
+        "printstrvdc",
+        "selectionlines",
+        "sidsingh",
+        "Succes",
+        "ypos",
+        "Zweijtzer"
+    ]
 }

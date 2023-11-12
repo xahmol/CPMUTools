@@ -1,25 +1,10 @@
 {
     "configurations": [
         {
-            "name": "WSL2",
+            "name": "WSL2 Ubuntu",
             "includePath": [
                 "${workspaceFolder}/**",
                 "/home/xahmol/z88dk/include/"
-            ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "windowsSdkVersion": "10.0.19041.0",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64"
-        },
-        {
-            "name": "WSL2 Ubuntu",
-            "includePath": [
-                "${workspaceFolder}/**"
             ],
             "defines": [],
             "cStandard": "c17",

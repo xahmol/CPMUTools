@@ -16,7 +16,6 @@ Patches and pull requests are welcome
 
 // prototypes
 void uii_get_time(void);
-void uii_set_time(char*);
-
+void uii_set_time(char *);
 
 #endif

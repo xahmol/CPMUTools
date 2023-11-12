@@ -16,7 +16,7 @@ Patches and pull requests are welcome
 
 void uii_get_path(void)
 {
-	unsigned char cmd[] = {0x00,DOS_CMD_GET_PATH};	
+	unsigned char cmd[] = {0x00, DOS_CMD_GET_PATH};
 	uii_settarget(TARGET_DOS1);
 	uii_sendcommand(cmd, 2);
 	uii_readdata();
@@ -26,7 +26,7 @@ void uii_get_path(void)
 
 void uii_open_dir(void)
 {
-	unsigned char cmd[] = {0x00,DOS_CMD_OPEN_DIR};
+	unsigned char cmd[] = {0x00, DOS_CMD_OPEN_DIR};
 	uii_settarget(TARGET_DOS1);
 	uii_sendcommand(cmd, 2);
 	uii_readstatus();
@@ -35,33 +35,33 @@ void uii_open_dir(void)
 
 void uii_get_dir(void)
 {
-	unsigned char cmd[] = {0x00,DOS_CMD_READ_DIR};
+	unsigned char cmd[] = {0x00, DOS_CMD_READ_DIR};
 	int count = 0;
 	uii_settarget(TARGET_DOS1);
 	uii_sendcommand(cmd, 2);
 }
 
-void uii_change_dir(char* directory)
+void uii_change_dir(char *directory)
 {
 	int x = 0;
 	uii_command[0] = 0x00;
 	uii_command[1] = DOS_CMD_CHANGE_DIR;
-	
-	for(x=0;x<strlen(directory);x++)
-		uii_command[x+2] = directory[x];
+
+	for (x = 0; x < strlen(directory); x++)
+		uii_command[x + 2] = directory[x];
 
 	uii_settarget(TARGET_DOS1);
-	uii_sendcommand((unsigned char*)uii_command, strlen(directory)+2);
-	
+	uii_sendcommand((unsigned char *)uii_command, strlen(directory) + 2);
+
 	uii_readstatus();
 	uii_accept();
 }
 
 void uii_change_dir_home(void)
 {
-	unsigned char cmd[] = {0x00,DOS_CMD_COPY_HOME_PATH};
+	unsigned char cmd[] = {0x00, DOS_CMD_COPY_HOME_PATH};
 	int count = 0;
-	
+
 	uii_settarget(TARGET_DOS1);
 	uii_sendcommand(cmd, 2);
 	uii_readstatus();
@@ -74,13 +74,13 @@ void uii_mount_disk(unsigned char id, char *filename)
 	uii_command[0] = 0x00;
 	uii_command[1] = DOS_CMD_MOUNT_DISK;
 	uii_command[2] = id;
-	
-	for(x=0;x<strlen(filename);x++)
-		uii_command[x+3] = filename[x];
-	
+
+	for (x = 0; x < strlen(filename); x++)
+		uii_command[x + 3] = filename[x];
+
 	uii_settarget(TARGET_DOS1);
-	uii_sendcommand((unsigned char*)uii_command, strlen(filename)+3);
-	
+	uii_sendcommand((unsigned char *)uii_command, strlen(filename) + 3);
+
 	uii_readdata();
 	uii_readstatus();
 	uii_accept();
@@ -107,18 +107,18 @@ void uii_open_file(unsigned char attrib, char *filename)
 	// 0x02 = Write
 	// 0x06 = Create new file
 	// 0x0E = Create (overwriting an existing file)
-	
+
 	int x = 0;
 	uii_command[0] = 0x00;
 	uii_command[1] = DOS_CMD_OPEN_FILE;
 	uii_command[2] = attrib;
-	
-	for(x=0;x<strlen(filename);x++)
-		uii_command[x+3] = filename[x];
-	
+
+	for (x = 0; x < strlen(filename); x++)
+		uii_command[x + 3] = filename[x];
+
 	uii_settarget(TARGET_DOS1);
-	uii_sendcommand((unsigned char*)uii_command, strlen(filename)+3);
-	
+	uii_sendcommand((unsigned char *)uii_command, strlen(filename) + 3);
+
 	uii_readdata();
 	uii_readstatus();
 	uii_accept();
@@ -126,29 +126,29 @@ void uii_open_file(unsigned char attrib, char *filename)
 
 void uii_close_file(void)
 {
-	unsigned char cmd[] = {0x00,DOS_CMD_CLOSE_FILE};
-	
+	unsigned char cmd[] = {0x00, DOS_CMD_CLOSE_FILE};
+
 	uii_settarget(TARGET_DOS1);
 	uii_sendcommand(cmd, 2);
-	
+
 	uii_readdata();
 	uii_readstatus();
 	uii_accept();
 }
 
-void uii_write_file(unsigned char* data, int length)
+void uii_write_file(unsigned char *data, int length)
 {
 	int x = 0;
 	uii_command[0] = 0x00;
 	uii_command[1] = DOS_CMD_WRITE_DATA;
 	uii_command[2] = 0x00;
 	uii_command[3] = 0x00;
-	
-	for(x=0;x<length;x++)
-		uii_command[x+4] = data[x];
-	
+
+	for (x = 0; x < length; x++)
+		uii_command[x + 4] = data[x];
+
 	uii_settarget(TARGET_DOS1);
-	uii_sendcommand((unsigned char*)uii_command, length+4);
+	uii_sendcommand((unsigned char *)uii_command, length + 4);
 
 	uii_readdata();
 	uii_readstatus();
@@ -157,32 +157,32 @@ void uii_write_file(unsigned char* data, int length)
 
 void uii_read_file(unsigned char length)
 {
-	unsigned char cmd[] = {0x00,DOS_CMD_READ_DATA, 0x00, 0x00};
-	
+	unsigned char cmd[] = {0x00, DOS_CMD_READ_DATA, 0x00, 0x00};
+
 	cmd[2] = length & 0xFF;
 	cmd[3] = length >> 8;
-	
+
 	uii_settarget(TARGET_DOS1);
 	uii_sendcommand(cmd, 2);
-	
+
 	// As with _get_dir(), read this in a loop, and _accept() the data
 	// in order to get the next packet
 	//
 	// each data packet is 512 bytes each
 }
 
-void uii_delete_file(char* filename)
+void uii_delete_file(char *filename)
 {
 	int x = 0;
 	uii_command[0] = 0x00;
 	uii_command[1] = DOS_CMD_DELETE_FILE;
-	
-	for(x=0;x<strlen(filename);x++)
-		uii_command[x+2] = filename[x];
-	
+
+	for (x = 0; x < strlen(filename); x++)
+		uii_command[x + 2] = filename[x];
+
 	uii_settarget(TARGET_DOS1);
-	uii_sendcommand((unsigned char*)uii_command, strlen(filename)+2);
-	
+	uii_sendcommand((unsigned char *)uii_command, strlen(filename) + 2);
+
 	uii_readstatus();
 	uii_accept();
 }
@@ -199,13 +199,13 @@ void uii_load_reu(unsigned char size)
 	// 6 = 8 MB
 	// 7 = 16 MB
 
-	unsigned char cmd[] = {0x00,DOS_CMD_LOAD_REU,0x00,0x00,0x00,0x00,0xff,0xff,0xff,0x00};
-	unsigned char sizes[8] = {0x01,0x03,0x07,0x0f,0x1f,0x3f,0x7f,0xff};
+	unsigned char cmd[] = {0x00, DOS_CMD_LOAD_REU, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0x00};
+	unsigned char sizes[8] = {0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff};
 
 	cmd[8] = sizes[size];
 
 	uii_settarget(TARGET_DOS1);
-	uii_sendcommand(cmd,10);
+	uii_sendcommand(cmd, 10);
 	uii_readdata();
 	uii_readstatus();
 	uii_accept();
@@ -216,11 +216,11 @@ void uii_save_reu(unsigned char size)
 	// Function to save REU memory to REU file
 	// Size is memory length to save in 64k blocks - 1
 
-	unsigned char cmd[] = {0x00,DOS_CMD_SAVE_REU,0x00,0x00,0x00,0x00,0xff,0xff,0x00,0x00};
+	unsigned char cmd[] = {0x00, DOS_CMD_SAVE_REU, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00};
 
 	cmd[8] = size;
 	uii_settarget(TARGET_DOS1);
-	uii_sendcommand(cmd,10);
+	uii_sendcommand(cmd, 10);
 	uii_readdata();
 	uii_readstatus();
 	uii_accept();
@@ -228,7 +228,7 @@ void uii_save_reu(unsigned char size)
 
 void uii_enable_drive_a(void)
 {
-	unsigned char cmd[] = {0x00,CTRL_CMD_ENABLE_DISK_A};
+	unsigned char cmd[] = {0x00, CTRL_CMD_ENABLE_DISK_A};
 
 	uii_settarget(TARGET_CONTROL);
 	uii_sendcommand(cmd, 2);
@@ -240,8 +240,8 @@ void uii_enable_drive_a(void)
 
 void uii_disable_drive_a(void)
 {
-#define CTRL_CMD_DISABLE_DISK_A	0x31
-	unsigned char cmd[] = {0x00,CTRL_CMD_DISABLE_DISK_A};
+#define CTRL_CMD_DISABLE_DISK_A 0x31
+	unsigned char cmd[] = {0x00, CTRL_CMD_DISABLE_DISK_A};
 
 	uii_settarget(TARGET_CONTROL);
 	uii_sendcommand(cmd, 2);
@@ -253,7 +253,7 @@ void uii_disable_drive_a(void)
 
 void uii_enable_drive_b(void)
 {
-	unsigned char cmd[] = {0x00,CTRL_CMD_ENABLE_DISK_B};
+	unsigned char cmd[] = {0x00, CTRL_CMD_ENABLE_DISK_B};
 
 	uii_settarget(TARGET_CONTROL);
 	uii_sendcommand(cmd, 2);
@@ -265,7 +265,7 @@ void uii_enable_drive_b(void)
 
 void uii_disable_drive_b(void)
 {
-	unsigned char cmd[] = {0x00,CTRL_CMD_DISABLE_DISK_B};
+	unsigned char cmd[] = {0x00, CTRL_CMD_DISABLE_DISK_B};
 
 	uii_settarget(TARGET_CONTROL);
 	uii_sendcommand(cmd, 2);
@@ -275,9 +275,9 @@ void uii_disable_drive_b(void)
 	uii_accept();
 }
 
-void uii_get_drive_a_power(void) 
+void uii_get_drive_a_power(void)
 {
-	unsigned char cmd[] = {0x00,CTRL_CMD_DRIVE_A_POWER};
+	unsigned char cmd[] = {0x00, CTRL_CMD_DRIVE_A_POWER};
 
 	uii_settarget(TARGET_CONTROL);
 	uii_sendcommand(cmd, 2);
@@ -287,10 +287,10 @@ void uii_get_drive_a_power(void)
 	uii_accept();
 }
 
-void uii_get_drive_b_power(void) 
+void uii_get_drive_b_power(void)
 {
-	unsigned char cmd[] = {0x00,CTRL_CMD_DRIVE_B_POWER};
-	
+	unsigned char cmd[] = {0x00, CTRL_CMD_DRIVE_B_POWER};
+
 	uii_settarget(TARGET_CONTROL);
 	uii_sendcommand(cmd, 2);
 
@@ -301,8 +301,8 @@ void uii_get_drive_b_power(void)
 
 void uii_get_deviceinfo(void)
 {
-	unsigned char cmd[] = {0x00,CTRL_CMD_DEVICE_INFO};
-	
+	unsigned char cmd[] = {0x00, CTRL_CMD_DEVICE_INFO};
+
 	uii_settarget(TARGET_CONTROL);
 	uii_sendcommand(cmd, 2);
 
@@ -313,24 +313,31 @@ void uii_get_deviceinfo(void)
 
 unsigned char uii_parse_deviceinfo(void)
 {
-	unsigned char devicecount,count,temp;
+	unsigned char devicecount, count, temp;
 
 	// Execute UCI 29 : CTRL_CMD_GET_DRVINFO
 	uii_get_deviceinfo();
 
 	// Return with success code = 0 if no success
-	if(!uii_success()) { return 0; }
+	if (!uii_success())
+	{
+		return 0;
+	}
 
 	// Get number of devices to parse
 	devicecount = uii_data[0];
-	if(!devicecount) { return 0; }
-	
+	if (!devicecount)
+	{
+		return 0;
+	}
+
 	// Parse first type
-	count=1;
+	count = 1;
 	temp = uii_data[count++];
 
 	// Parse drive A
-	if(temp<0x0f) {
+	if (temp < 0x0f)
+	{
 		// Drive A found
 		uii_devinfo[0].exist = 1;
 		uii_devinfo[0].type = temp;
@@ -340,7 +347,8 @@ unsigned char uii_parse_deviceinfo(void)
 	}
 
 	// Parse drive B
-	if(temp<0x0f) {
+	if (temp < 0x0f)
+	{
 		// Drive A found
 		uii_devinfo[1].exist = 1;
 		uii_devinfo[1].type = temp;
@@ -350,7 +358,8 @@ unsigned char uii_parse_deviceinfo(void)
 	}
 
 	// Parse SoftIEC
-	if(temp==0x0f) {
+	if (temp == 0x0f)
+	{
 		// SoftIEC
 		uii_devinfo[2].exist = 1;
 		uii_devinfo[2].type = temp;
@@ -360,7 +369,8 @@ unsigned char uii_parse_deviceinfo(void)
 	}
 
 	// Parse soft printer
-	if(temp==0x50) {
+	if (temp == 0x50)
+	{
 		// SoftPrinter
 		uii_devinfo[3].exist = 1;
 		uii_devinfo[3].type = temp;
@@ -371,7 +381,8 @@ unsigned char uii_parse_deviceinfo(void)
 	return 1;
 }
 
-char* uii_device_tyoe(unsigned char typeval) {
+char *uii_device_tyoe(unsigned char typeval)
+{
 	switch (typeval)
 	{
 	case 0:
@@ -381,9 +392,13 @@ char* uii_device_tyoe(unsigned char typeval) {
 	case 1:
 		return "1571";
 		break;
-	
+
 	case 2:
 		return "1581";
+		break;
+
+	case 0x0f:
+		return "SIEC";
 		break;
 
 	default:

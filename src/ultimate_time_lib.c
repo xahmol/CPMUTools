@@ -14,11 +14,11 @@ Patches and pull requests are welcome
 #include "include/ultimate_common_lib.h"
 #include "include/ultimate_time_lib.h"
 
-#pragma code-name	("BANKACCESS");
+#pragma code - name("BANKACCESS");
 
-void uii_get_time(void) 
+void uii_get_time(void)
 {
-	unsigned char cmd[] = {0x00,DOS_CMD_GET_TIME};
+	unsigned char cmd[] = {0x00, DOS_CMD_GET_TIME};
 	uii_settarget(TARGET_DOS1);
 	uii_sendcommand(cmd, 2);
 
@@ -27,18 +27,18 @@ void uii_get_time(void)
 	uii_accept();
 }
 
-void uii_set_time(char* data) 
+void uii_set_time(char *data)
 {
 	int x = 0;
 	uii_command[0] = 0x00;
 	uii_command[1] = DOS_CMD_SET_TIME;
-	
-	for(x=0;x<6;x++)
-		uii_command[x+2] = data[x];
-	
+
+	for (x = 0; x < 6; x++)
+		uii_command[x + 2] = data[x];
+
 	uii_settarget(TARGET_DOS1);
-	uii_sendcommand((unsigned char*)uii_command, 8);
-	
+	uii_sendcommand((unsigned char *)uii_command, 8);
+
 	uii_readstatus();
 	uii_accept();
 }
